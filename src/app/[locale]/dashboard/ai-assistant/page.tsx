@@ -1135,7 +1135,7 @@ export default function CaseAnalysisPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-gray-600">Official Legal Analysis Report</p>
           </div>
           <div className="text-right text-sm text-gray-600">
-            <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
+            <p suppressHydrationWarning><strong>Date:</strong> {new Date().toLocaleDateString("en-GB")}</p>
             <p><strong>Ref:</strong> NYA-X7V2M9</p>
           </div>
         </div>
