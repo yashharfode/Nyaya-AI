@@ -90,8 +90,8 @@ export default function DocumentsPage() {
 
             {/* Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-bg-subtle border-b border-border-main text-text-muted font-semibold text-[11px] uppercase tracking-wider">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-bg-subtle border-b border-border-main text-text-muted font-semibold text-[11px] uppercase tracking-wider whitespace-nowrap">
                   <tr>
                     <th className="px-6 py-4 font-bold">Document Name</th>
                     <th className="px-6 py-4 font-bold">Type</th>

@@ -8,42 +8,74 @@ export async function analyzeLegalIssueAction(issueText: string) {
       throw new Error("Missing OpenRouter API Key");
     }
 
-    const systemPrompt = `You are an expert legal AI assistant for NyayaAI, specializing in Indian law.
+    const systemPrompt = `You are an expert legal AI assistant for NyayaAI, an AI-powered Legal Operating System specializing in Indian law.
     Analyze the user's legal issue and return ONLY a raw JSON object (without any markdown formatting or code blocks).
+    Never generate simple paragraphs. Always return structured actionable information.
     The JSON object must have exactly this structure:
     {
-      "category": "String (e.g. Consumer Dispute, Cyber Crime, Property Dispute)",
-      "severity": "String (Low, Medium, or High)",
-      "caseStrengthScore": 75,
-      "applicableRights": ["String with specific Indian law/section e.g. Section 66C IT Act 2000"],
-      "evidenceChecklist": ["String (Evidence item)"],
-      "recommendedAuthority": "String",
-      "complaintDraft": "String (formal complaint letter. Use \\n for newlines)",
-      "nextSteps": ["String (Step 1)", "String (Step 2)", "String (Step 3)"],
-      "resolutionTime": "String (e.g. 30 - 60 Days)",
-      "summary": "String (2-3 sentence summary)",
-      "implications": ["String"],
-      "timeline": [
-        { "step": "String", "duration": "String", "status": "done" },
-        { "step": "String", "duration": "String", "status": "active" },
-        { "step": "String", "duration": "String", "status": "pending" },
-        { "step": "String", "duration": "String", "status": "pending" },
-        { "step": "String", "duration": "String", "status": "pending" }
+      "caseOverview": {
+        "title": "String (e.g. Cyber Fraud, Property Dispute)",
+        "category": "String",
+        "subcategory": "String",
+        "severity": "String (Low, Medium, High)",
+        "urgency": "String (e.g. Urgent Action Required)",
+        "estimatedComplexity": "String (e.g. Low, Medium, High)",
+        "confidenceScore": "Number (0-100)"
+      },
+      "incidentSummary": "String (Rewrite the user's issue professionally and concisely. Explain what happened.)",
+      "applicableRights": [
+        { "name": "String (e.g. Right to Safety)", "type": "String (Fundamental, Legal, Citizen)", "explanation": "String (Simple explanation)" }
       ],
-      "quickActions": [
-        { "label": "String", "url": "String (real URL)", "icon": "shield" },
-        { "label": "String", "url": "String (real URL)", "icon": "globe" }
+      "applicableLaws": [
+        { "name": "String (Law Name)", "purpose": "String", "whyApplies": "String", "maxPunishment": "String (if applicable, else null)", "explanation": "String (Simple explanation)" }
       ],
-      "landmarkCases": [
-        { "case": "String", "court": "String", "year": "String", "relevance": "String" }
+      "riskAnalysis": {
+        "riskLevel": "String (Low, Medium, High)",
+        "immediateThreat": "Boolean",
+        "financialRisk": "String (Low, Medium, High)",
+        "legalComplexity": "String (Low, Medium, High)",
+        "evidenceRisk": "String (Low, Medium, High)",
+        "needLawyer": "Boolean",
+        "needImmediateAction": "Boolean"
+      },
+      "evidenceManager": {
+        "required": ["String"],
+        "optional": ["String"],
+        "digital": ["String"],
+        "physical": ["String"],
+        "witnesses": ["String"],
+        "missing": ["String"]
+      },
+      "actionRoadmap": [
+        { "step": "String", "duration": "String", "status": "String (done, active, or pending)" }
       ],
-      "riskFactors": ["String (risk 1)", "String (risk 2)"]
+      "governmentPortals": [
+        { "name": "String", "url": "String (real URL)", "purpose": "String" }
+      ],
+      "complaintDraft": "String (Formal complaint letter. Use \\n for newlines)",
+      "documentChecklist": ["String (e.g. Marriage Certificate, Bank Statements, Screenshots)"],
+      "nextBestActions": {
+        "today": ["String"],
+        "tomorrow": ["String"],
+        "thisWeek": ["String"],
+        "emergency": ["String"]
+      },
+      "faqs": [
+        { "question": "String", "answer": "String" }
+      ],
+      "legalEducation": {
+        "articles": ["String"],
+        "rights": ["String"],
+        "terms": [{ "term": "String", "definition": "String" }],
+        "examples": ["String"]
+      },
+      "similarScenarios": [
+        { "scenario": "String", "actionToTake": "String" }
+      ]
     }
-    The caseStrengthScore must be a number from 0-100. Set timeline[0].status to "done", timeline[1].status to "active", the rest to "pending".
-    For quickActions, use real government portal URLs like cybercrime.gov.in, consumerhelpline.gov.in, etc.
-    For landmarkCases, cite 1-2 real relevant Indian Supreme Court or High Court judgments.
+    The actionRoadmap status should be "done" for the first step, "active" for the second, and "pending" for the rest.
+    For governmentPortals, use real URLs like cybercrime.gov.in, eCourts.gov.in, etc.
     `;
-
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -138,4 +170,3 @@ export async function chatWithAiAction(messages: { role: string, content: string
     return { success: false, error: error.message || "Something went wrong" };
   }
 }
-
