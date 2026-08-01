@@ -5,8 +5,9 @@ import { useTranslations } from "next-intl";
 import { Scale, Eye, EyeOff, ShieldCheck, Lock, Users } from "lucide-react";
 import { Link, useRouter } from "@/i18n/routing";
 import { createSessionAction, bypassLoginAction } from "@/actions/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+import { auth, googleProvider, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function SignupPage() {
   const t = useTranslations("SignupPage");
@@ -29,6 +30,14 @@ export default function SignupPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
+      // Save to Firestore
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        name,
+        email: userCredential.user.email || email,
+        createdAt: new Date().toISOString(),
+        role: "user"
+      }, { merge: true });
+
       const result = await createSessionAction({
         firebaseUid: userCredential.user.uid,
         email: userCredential.user.email || email,
@@ -60,6 +69,15 @@ export default function SignupPage() {
     try {
       setError(null);
       const result = await signInWithPopup(auth, googleProvider);
+      
+      // Save to Firestore
+      await setDoc(doc(db, "users", result.user.uid), {
+        name: result.user.displayName,
+        email: result.user.email,
+        createdAt: new Date().toISOString(),
+        role: "user",
+        avatar: result.user.photoURL
+      }, { merge: true });
       
       const sessionResult = await createSessionAction({
         firebaseUid: result.user.uid,
@@ -218,19 +236,6 @@ export default function SignupPage() {
               </svg>
               {t("googleButton")}
             </button>
-
-            {process.env.NODE_ENV !== "production" && (
-              <button 
-                onClick={async () => {
-                  await bypassLoginAction();
-                  router.push("/dashboard");
-                }}
-                type="button"
-                className="w-full mt-2 flex items-center justify-center gap-3 bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-semibold rounded-xl py-3 hover:bg-brand-accent/20 transition-all shadow-sm"
-              >
-                Bypass Login (Dev Only)
-              </button>
-            )}
 
             <p className="text-center text-sm text-text-muted">
               {t("hasAccount")} <Link href="/login" className="font-bold text-brand-primary hover:underline">{t("login")}</Link>

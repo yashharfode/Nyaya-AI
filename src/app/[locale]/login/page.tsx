@@ -210,20 +210,7 @@ export default function LoginPage() {
               {t("googleButton")}
             </button>
 
-            {process.env.NODE_ENV !== "production" && (
-              <button 
-                onClick={async () => {
-                  await bypassLoginAction();
-                  router.push("/dashboard");
-                }}
-                type="button"
-                className="w-full mt-2 flex items-center justify-center gap-3 bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-semibold rounded-xl py-3 hover:bg-brand-accent/20 transition-all shadow-sm"
-              >
-                Bypass Login (Dev Only)
-              </button>
-            )}
-
-            <p className="text-center text-sm text-text-muted">
+            <p className="text-center text-sm text-text-muted mt-6">
               {t("noAccount")} <Link href="/signup" className="font-bold text-brand-primary hover:underline">{t("signUp")}</Link>
             </p>
           </div>
