@@ -1,5 +1,11 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { 
+  getAuth, 
+  initializeAuth, 
+  GoogleAuthProvider, 
+  browserLocalPersistence, 
+  browserSessionPersistence 
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -14,13 +20,20 @@ const firebaseConfig = {
 // Initialize Firebase only if it hasn't been initialized already (useful for Next.js hot reloading)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-export const auth = getAuth(app);
+// Use browserLocalPersistence (localStorage) instead of indexedDB to prevent "Database is closing/hidden" HMR errors
+let authInstance;
+try {
+  if (typeof window !== "undefined") {
+    authInstance = initializeAuth(app, {
+      persistence: [browserLocalPersistence, browserSessionPersistence],
+    });
+  } else {
+    authInstance = getAuth(app);
+  }
+} catch {
+  authInstance = getAuth(app);
+}
+
+export const auth = authInstance;
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
-
-// Fix for Next.js HMR "Database is closing/hidden" error caused by IndexedDB resets
-if (typeof window !== "undefined") {
-  setPersistence(auth, browserLocalPersistence).catch(() => {
-    // Ignore errors from persistence setting during HMR reloads
-  });
-}
