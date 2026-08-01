@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { 
   Send, 
   RefreshCcw,
@@ -17,7 +17,7 @@ import {
 import { getSession } from "@/actions/auth";
 
 export default async function DashboardPage() {
-  const t = useTranslations("Dashboard");
+  const t = await getTranslations("Dashboard");
   const session = await getSession();
   const userName = session?.name ? session.name.split(" ")[0] : "User";
 

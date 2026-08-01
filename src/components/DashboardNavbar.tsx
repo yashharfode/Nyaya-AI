@@ -2,13 +2,12 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
-import { Link, usePathname, useRouter } from "@/i18n/routing";
-import { Scale, Bell, Search, LayoutDashboard, FileText, Briefcase, LogOut } from "lucide-react";
+import { useRouter } from "@/i18n/routing";
+import { Bell, Search, LogOut } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
 
 export default function DashboardNavbar({ user }: { user?: { name: string; email: string } | null }) {
   const t = useTranslations("Dashboard");
-  const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -16,68 +15,52 @@ export default function DashboardNavbar({ user }: { user?: { name: string; email
     router.push("/login");
   };
 
-  const navLinks = [
-    { name: t("nav.home"), href: "/dashboard", icon: <LayoutDashboard size={18} /> },
-    { name: t("nav.cases"), href: "/dashboard/cases", icon: <Briefcase size={18} /> },
-    { name: t("nav.documents"), href: "/dashboard/documents", icon: <FileText size={18} /> },
-  ];
-
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white border-b border-border-main shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-        
-        {/* Left Side: Logo & Main Links */}
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="bg-brand-primary text-white p-1.5 rounded-lg group-hover:bg-brand-primary/90 transition-colors">
-              <Scale size={20} strokeWidth={2.5} />
-            </div>
-            <span className="font-bold text-lg text-text-main hidden sm:block">NyayaAI</span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                    isActive 
-                      ? "bg-bg-subtle text-brand-primary font-bold shadow-sm" 
-                      : "text-text-muted hover:bg-bg-subtle hover:text-text-main"
-                  }`}
-                >
-                  <span className={isActive ? "text-brand-primary" : "text-text-light"}>{link.icon}</span>
-                  {link.name}
-                </Link>
-              );
-            })}
-          </div>
+    <nav className="sticky top-0 z-30 w-full bg-bg-main border-b border-border-main flex items-center justify-between h-20 px-6 lg:px-10">
+      
+      {/* Left Side: Search Bar */}
+      <div className="flex-1 max-w-xl">
+        <div className="relative flex items-center w-full">
+          <Search size={18} className="absolute left-4 text-text-light" />
+          <input 
+            type="text" 
+            placeholder="Search for laws, rights, cases..." 
+            className="w-full pl-11 pr-4 py-2.5 bg-white border border-border-main rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all text-sm"
+          />
         </div>
+      </div>
 
-        {/* Right Side: Global Search & Profile */}
-        <div className="flex items-center gap-4">
-          
-          <button className="relative p-2 text-text-light hover:text-text-main hover:bg-bg-subtle rounded-full transition-colors">
-            <Bell size={20} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-          </button>
+      {/* Right Side: Actions & Profile */}
+      <div className="flex items-center gap-6 ml-4">
+        
+        {/* Upgrade Button */}
+        <button className="hidden md:flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors shadow-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M2 20h20v2H2v-2zm1.5-2L2 9l5 3 5-7 5 7 5-3-1.5 9h-17z" />
+          </svg>
+          Upgrade to Pro
+        </button>
 
-          <div className="h-6 w-px bg-border-main mx-1"></div>
+        {/* Notifications */}
+        <button className="relative p-2 text-text-light hover:text-text-main hover:bg-bg-subtle rounded-full transition-colors">
+          <Bell size={20} />
+          <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-text-main rounded-full"></span>
+        </button>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:block text-right">
-              <p className="text-sm font-bold text-text-main leading-tight">{user?.name || "User"}</p>
-              <p className="text-xs text-text-muted">{t("role")}</p>
-            </div>
-            <div className="w-9 h-9 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold shadow-md shadow-brand-primary/20">
-              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-            </div>
-            <button onClick={handleLogout} className="p-2 text-text-light hover:text-red-500 hover:bg-red-50 rounded-full transition-colors ml-1" title="Logout">
-              <LogOut size={18} />
-            </button>
+        {/* Profile */}
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-gray-200 text-text-main flex items-center justify-center font-bold overflow-hidden border border-border-main">
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
           </div>
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-sm font-semibold text-text-main">{user?.name?.split(" ")[0] || "User"}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-light">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
+          <button onClick={handleLogout} className="p-2 text-text-light hover:text-red-500 hover:bg-red-50 rounded-full transition-colors ml-1" title="Logout">
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
     </nav>

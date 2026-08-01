@@ -1,7 +1,5 @@
 "use server";
 
-import { db } from "@/lib/db";
-import bcrypt from "bcrypt";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
@@ -23,86 +21,58 @@ export async function getSession() {
   }
 }
 
-export async function signupAction(prevState: any, formData: FormData) {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+export async function createSessionAction({ firebaseUid, email, name }: { firebaseUid: string, email: string, name?: string | null }) {
+  try {
+    if (!email || !firebaseUid) {
+      return { error: "Missing required user information" };
+    }
 
-  if (!name || !email || !password) {
-    return { error: "All fields are required" };
+    const userName = name || email.split("@")[0];
+
+    // Create JWT for existing middleware protection using Firebase UID as userId
+    const token = await new SignJWT({ userId: firebaseUid, firebaseUid, name: userName, email })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("7d")
+      .sign(JWT_SECRET);
+
+    // Set cookie
+    const cookieStore = await cookies();
+    cookieStore.set("auth_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Session creation error:", error);
+    return { error: "Failed to create session on the server. Please try again." };
   }
-
-  // Check if user exists
-  const existingUser = await db.user.findUnique({ where: { email } });
-  if (existingUser) {
-    return { error: "Email is already in use" };
-  }
-
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Create user
-  const user = await db.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-    },
-  });
-
-  // Create JWT
-  const token = await new SignJWT({ userId: user.id, name: user.name, email: user.email })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(JWT_SECRET);
-
-  // Set cookie
-  const cookieStore = await cookies();
-  cookieStore.set("auth_session", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  });
-
-  return { success: true };
 }
 
-export async function loginAction(prevState: any, formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) {
-    return { error: "Email and password are required" };
-  }
-
-  const user = await db.user.findUnique({ where: { email } });
-  if (!user) {
-    return { error: "Invalid email or password" };
-  }
-
-  const passwordMatch = await bcrypt.compare(password, user.password);
-  if (!passwordMatch) {
-    return { error: "Invalid email or password" };
-  }
-
-  // Create JWT
-  const token = await new SignJWT({ userId: user.id, name: user.name, email: user.email })
+// Development Only: Bypass Login
+export async function bypassLoginAction() {
+  const token = await new SignJWT({ 
+    userId: "dev_bypass_uid_123", 
+    firebaseUid: "dev_bypass_uid_123", 
+    name: "Dev User", 
+    email: "dev@example.com" 
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
     .sign(JWT_SECRET);
 
-  // Set cookie
   const cookieStore = await cookies();
   cookieStore.set("auth_session", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: 60 * 60 * 24 * 7,
   });
 
   return { success: true };

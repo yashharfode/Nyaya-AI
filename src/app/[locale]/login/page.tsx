@@ -1,21 +1,86 @@
 "use client";
 
-import React, { useActionState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Scale, Eye, EyeOff, ShieldCheck, Lock, Users } from "lucide-react";
 import { Link, useRouter } from "@/i18n/routing";
-import { loginAction } from "@/actions/auth";
+import { createSessionAction, bypassLoginAction } from "@/actions/auth";
+import { auth, googleProvider } from "@/lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 export default function LoginPage() {
   const t = useTranslations("LoginPage");
   const router = useRouter();
-  const [state, formAction, isPending] = useActionState(loginAction, null);
+  
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    if (state?.success) {
-      router.push("/dashboard");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsPending(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      const result = await createSessionAction({
+        firebaseUid: userCredential.user.uid,
+        email: userCredential.user.email || email,
+        name: userCredential.user.displayName
+      });
+
+      if (result.error) {
+        setError(result.error);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      console.error(err);
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+        setError("Incorrect email or password.");
+      } else if (err.code === 'auth/invalid-email') {
+        setError("Please enter a valid email address.");
+      } else if (err.code === 'auth/too-many-requests') {
+        setError("Too many failed attempts. Please try again later.");
+      } else {
+        setError(err.message || "Invalid email or password");
+      }
+    } finally {
+      setIsPending(false);
     }
-  }, [state, router]);
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setError(null);
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      const sessionResult = await createSessionAction({
+        firebaseUid: result.user.uid,
+        email: result.user.email || "",
+        name: result.user.displayName
+      });
+
+      if (sessionResult.error) {
+        setError(sessionResult.error);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      console.error(err);
+      if (err.code === 'auth/popup-closed-by-user') {
+        // User intentionally closed the popup, so we can just ignore it or show a mild message
+        setError(null);
+      } else {
+        setError(err.message || "Failed to log in with Google");
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-bg-main flex flex-col font-sans selection:bg-brand-accent selection:text-white">
@@ -64,10 +129,10 @@ export default function LoginPage() {
               <p className="text-text-muted">{t("subtitle")}</p>
             </div>
 
-            <form action={formAction} className="space-y-5">
-              {state?.error && (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {error && (
                 <div className="bg-red-50 text-red-500 text-sm p-3 rounded-xl border border-red-100">
-                  {state.error}
+                  {error}
                 </div>
               )}
               <div className="space-y-1">
@@ -93,14 +158,18 @@ export default function LoginPage() {
                     <Lock className="h-5 w-5 text-text-light" />
                   </div>
                   <input 
-                    type="password" 
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     required
                     className="w-full pl-10 pr-12 py-3 bg-bg-main border border-border-main rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all text-sm" 
                     placeholder={t("passwordPlaceholder")}
                   />
-                  <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-light hover:text-text-main">
-                    <EyeOff className="h-5 w-5" />
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-light hover:text-text-main"
+                  >
+                    {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
@@ -126,7 +195,11 @@ export default function LoginPage() {
               <div className="flex-1 h-px bg-border-main"></div>
             </div>
 
-            <button className="w-full flex items-center justify-center gap-3 bg-white border border-border-main text-text-main font-semibold rounded-xl py-3 hover:bg-bg-subtle transition-all shadow-sm">
+            <button 
+              onClick={handleGoogleLogin}
+              type="button"
+              className="w-full flex items-center justify-center gap-3 bg-white border border-border-main text-text-main font-semibold rounded-xl py-3 hover:bg-bg-subtle transition-all shadow-sm"
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -136,6 +209,19 @@ export default function LoginPage() {
               </svg>
               {t("googleButton")}
             </button>
+
+            {process.env.NODE_ENV !== "production" && (
+              <button 
+                onClick={async () => {
+                  await bypassLoginAction();
+                  router.push("/dashboard");
+                }}
+                type="button"
+                className="w-full mt-2 flex items-center justify-center gap-3 bg-brand-accent/10 border border-brand-accent/20 text-brand-accent font-semibold rounded-xl py-3 hover:bg-brand-accent/20 transition-all shadow-sm"
+              >
+                Bypass Login (Dev Only)
+              </button>
+            )}
 
             <p className="text-center text-sm text-text-muted">
               {t("noAccount")} <Link href="/signup" className="font-bold text-brand-primary hover:underline">{t("signUp")}</Link>

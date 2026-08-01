@@ -1,5 +1,6 @@
 import React from "react";
 import DashboardNavbar from "@/components/DashboardNavbar";
+import DashboardSidebar from "@/components/DashboardSidebar";
 import { getSession } from "@/actions/auth";
 
 export default async function DashboardLayout({
@@ -10,10 +11,16 @@ export default async function DashboardLayout({
   const session = await getSession();
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-subtle">
-      <DashboardNavbar user={session} />
-      <div className="flex-1">
-        {children}
+    <div className="flex min-h-screen bg-bg-main font-sans selection:bg-black selection:text-white">
+      {/* Sidebar - hidden on mobile, block on lg */}
+      <DashboardSidebar />
+      
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col lg:pl-[280px]">
+        <DashboardNavbar user={session} />
+        <main className="flex-1 overflow-x-hidden">
+          {children}
+        </main>
       </div>
     </div>
   );

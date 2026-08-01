@@ -9,8 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@prisma/client": "^7.9.1",
-    "bcrypt": "^6.0.0",
+    "firebase": "^12.17.0",
     "jose": "^6.2.6",
     "lucide-react": "^0.555.0",
     "next": "16.2.12",
@@ -21,6 +20,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -28,7 +28,6 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
-    "prisma": "^7.9.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
