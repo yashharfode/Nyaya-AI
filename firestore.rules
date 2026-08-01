@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Function to check if the user is signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Match the users collection
+    match /users/{userId} {
+      // A user can read, create, and update their own profile document
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Match the cases collection
+    match /cases/{caseId} {
+      // A user can only read and write cases that belong to them
+      // For create: the payload's userId must match their auth uid
+      // For read/update/delete: the existing document's userId must match their auth uid
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}
