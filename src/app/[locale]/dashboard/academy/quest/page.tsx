@@ -283,8 +283,3 @@ export default function QuestPage() {
     </main>
   );
 }
-
-
-import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "@/i18n/routing";
