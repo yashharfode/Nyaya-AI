@@ -1,10 +1,10 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { 
-  getAuth, 
-  initializeAuth, 
-  GoogleAuthProvider, 
-  browserLocalPersistence, 
-  browserSessionPersistence 
+import {
+  getAuth,
+  initializeAuth,
+  GoogleAuthProvider,
+  browserLocalPersistence,
+  browserPopupRedirectResolver,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -17,23 +17,22 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only if it hasn't been initialized already (useful for Next.js hot reloading)
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Capture whether this is the FIRST initialization BEFORE calling initializeApp
+// On HMR reloads, getApps().length > 0 so isNewApp = false — safe to use getAuth()
+const isNewApp = !getApps().length;
+const app = isNewApp ? initializeApp(firebaseConfig) : getApp();
 
-// Use browserLocalPersistence (localStorage) instead of indexedDB to prevent "Database is closing/hidden" HMR errors
-let authInstance;
-try {
-  if (typeof window !== "undefined") {
-    authInstance = initializeAuth(app, {
-      persistence: [browserLocalPersistence, browserSessionPersistence],
-    });
-  } else {
-    authInstance = getAuth(app);
-  }
-} catch {
-  authInstance = getAuth(app);
-}
+// On first load: use initializeAuth with localStorage persistence + popupRedirectResolver
+// On HMR reload: app already exists, getAuth() returns the already-initialized auth instance
+export const auth =
+  isNewApp && typeof window !== "undefined"
+    ? initializeAuth(app, {
+        persistence: [browserLocalPersistence],
+        popupRedirectResolver: browserPopupRedirectResolver,
+      })
+    : getAuth(app);
 
-export const auth = authInstance;
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+
+
