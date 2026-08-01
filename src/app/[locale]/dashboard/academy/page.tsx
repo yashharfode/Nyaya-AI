@@ -76,7 +76,7 @@ export default function AcademyPage() {
       icon: <Car size={24} className="text-amber-600" />,
       iconBg: "bg-amber-50 border-amber-100",
       completed: completedQuests.includes("traffic-stop"),
-      locked: !completedQuests.includes("cyber-fraud"),
+      locked: false,
     },
     {
       id: "tenant-dispute",
@@ -89,7 +89,7 @@ export default function AcademyPage() {
       icon: <Home size={24} className="text-blue-600" />,
       iconBg: "bg-blue-50 border-blue-100",
       completed: completedQuests.includes("tenant-dispute"),
-      locked: !completedQuests.includes("traffic-stop"),
+      locked: false,
     },
     {
       id: "workplace-harassment",
@@ -102,7 +102,7 @@ export default function AcademyPage() {
       icon: <Briefcase size={24} className="text-purple-600" />,
       iconBg: "bg-purple-50 border-purple-100",
       completed: completedQuests.includes("workplace-harassment"),
-      locked: !completedQuests.includes("tenant-dispute"),
+      locked: false,
     },
     {
       id: "consumer-fraud",
@@ -115,7 +115,7 @@ export default function AcademyPage() {
       icon: <ShoppingBag size={24} className="text-orange-600" />,
       iconBg: "bg-orange-50 border-orange-100",
       completed: completedQuests.includes("consumer-fraud"),
-      locked: !completedQuests.includes("workplace-harassment"),
+      locked: false,
     },
     {
       id: "rti-filing",
@@ -128,7 +128,7 @@ export default function AcademyPage() {
       icon: <FileText size={24} className="text-teal-600" />,
       iconBg: "bg-teal-50 border-teal-100",
       completed: completedQuests.includes("rti-filing"),
-      locked: !completedQuests.includes("consumer-fraud"),
+      locked: false,
     },
   ];
 
