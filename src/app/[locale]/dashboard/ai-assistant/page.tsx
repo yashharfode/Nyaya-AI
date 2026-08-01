@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "@/i18n/routing";
 import { 
   ChevronRight, 
   CheckCircle2, 
@@ -15,10 +16,50 @@ import {
   ArrowRight,
   ShieldCheck,
   PhoneCall,
-  Star
+  Star,
+  Loader2
 } from "lucide-react";
 
 export default function CaseAnalysisPage() {
+  const router = useRouter();
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const data = sessionStorage.getItem("nyaya_ai_analysis");
+    if (data) {
+      try {
+        setAnalysis(JSON.parse(data));
+      } catch (e) {
+        console.error("Failed to parse analysis data", e);
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8 flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="animate-spin text-text-light w-8 h-8" />
+      </main>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <h2 className="text-2xl font-bold text-text-main">No analysis found</h2>
+        <p className="text-text-muted">Please describe your issue first to get a case analysis.</p>
+        <button 
+          onClick={() => router.push("/dashboard/describe-issue")}
+          className="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors"
+        >
+          Describe Issue
+        </button>
+      </main>
+    );
+  }
+
   return (
     <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8 space-y-6">
       
@@ -72,13 +113,16 @@ export default function CaseAnalysisPage() {
           <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm">
             <div className="flex items-start justify-between gap-4 mb-3">
               <h3 className="font-bold text-text-main text-lg">Your Issue</h3>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-border-main rounded-xl text-xs font-bold text-text-main hover:bg-bg-subtle transition-colors shrink-0">
+              <button 
+                onClick={() => router.push("/dashboard/describe-issue")}
+                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-border-main rounded-xl text-xs font-bold text-text-main hover:bg-bg-subtle transition-colors shrink-0"
+              >
                 <Pencil size={12} />
                 Edit Issue
               </button>
             </div>
-            <p className="text-sm text-text-muted leading-relaxed">
-              My online transaction was fraudulent. Money was deducted from my account but the product/service was not delivered and the merchant is not responding.
+            <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap">
+              {analysis.originalIssue}
             </p>
           </div>
 
@@ -90,8 +134,8 @@ export default function CaseAnalysisPage() {
                 <ShoppingCart size={20} className="text-text-main" />
               </div>
               <p className="text-xs text-text-muted font-semibold mb-1">Issue Category</p>
-              <p className="font-bold text-sm text-text-main mb-3">Consumer Dispute</p>
-              <p className="text-[11px] text-text-muted mt-auto">Transaction Fraud / Deficiency in Service</p>
+              <p className="font-bold text-sm text-text-main mb-3">{analysis.category}</p>
+              <p className="text-[11px] text-text-muted mt-auto">Categorized based on your provided details.</p>
             </div>
 
             <div className="bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col items-center text-center">
@@ -100,9 +144,9 @@ export default function CaseAnalysisPage() {
               </div>
               <p className="text-xs text-text-muted font-semibold mb-1">Severity Level</p>
               <div className="bg-gray-100 text-text-main px-3 py-1 rounded-full text-xs font-bold mb-3 border border-border-main">
-                Medium
+                {analysis.severity}
               </div>
-              <p className="text-[11px] text-text-muted mt-auto">Your issue requires formal action but is not an emergency.</p>
+              <p className="text-[11px] text-text-muted mt-auto">Based on standard legal precedents.</p>
             </div>
 
             <div className="bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col items-center text-center">
@@ -110,7 +154,7 @@ export default function CaseAnalysisPage() {
                 <Clock size={20} className="text-text-main" />
               </div>
               <p className="text-xs text-text-muted font-semibold mb-1">Likely Resolution Time</p>
-              <p className="font-bold text-sm text-text-main mb-3">30 – 60 Days</p>
+              <p className="font-bold text-sm text-text-main mb-3">{analysis.resolutionTime}</p>
               <p className="text-[11px] text-text-muted mt-auto">Estimated time for initial response after filing.</p>
             </div>
 
@@ -125,14 +169,14 @@ export default function CaseAnalysisPage() {
               <div>
                 <h3 className="font-bold text-text-main text-sm mb-2">AI Summary</h3>
                 <p className="text-[13px] text-text-muted leading-relaxed mb-6">
-                  Based on the details you provided, this appears to be a case of online transaction fraud and deficiency in service under consumer protection laws and IT Act. You have the right to claim refund and compensation for the loss.
+                  {analysis.summary}
                 </p>
                 
                 <h4 className="font-bold text-sm text-text-main mb-3">What this means:</h4>
                 <ul className="list-disc list-outside pl-4 space-y-2 text-[13px] text-text-muted">
-                  <li>You were a victim of unfair trade practice.</li>
-                  <li>You are entitled to refund of the amount paid.</li>
-                  <li>You can also claim compensation for harassment and loss.</li>
+                  {analysis.implications?.map((item: string, idx: number) => (
+                    <li key={idx}>{item}</li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -165,11 +209,13 @@ export default function CaseAnalysisPage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-border-main pb-3">
                 <span className="text-xs font-semibold text-text-muted">Case ID</span>
-                <span className="text-xs font-bold text-text-main">NYA-2025-0512-001</span>
+                <span className="text-xs font-bold text-text-main">NYA-{new Date().getFullYear()}-{Math.floor(1000 + Math.random() * 9000)}</span>
               </div>
               <div className="flex items-center justify-between border-b border-border-main pb-3">
                 <span className="text-xs font-semibold text-text-muted">Date Analyzed</span>
-                <span className="text-xs font-bold text-text-main">12 May 2025, 11:30 AM</span>
+                <span className="text-xs font-bold text-text-main">
+                  {new Date().toLocaleDateString("en-US", { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
               </div>
               <div className="flex items-center justify-between border-b border-border-main pb-3">
                 <span className="text-xs font-semibold text-text-muted">Analyzed By</span>

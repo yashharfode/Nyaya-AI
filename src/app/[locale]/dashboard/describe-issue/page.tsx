@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "@/i18n/routing";
 import { 
   ShieldCheck, 
   Upload, 
@@ -16,11 +17,40 @@ import {
   Rocket,
   Check,
   AlertTriangle,
-  PhoneCall
+  PhoneCall,
+  Loader2
 } from "lucide-react";
+import { analyzeLegalIssueAction } from "@/actions/ai";
 
 export default function DescribeIssuePage() {
   const [text, setText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleAnalyze = async () => {
+    if (!text.trim()) return;
+    
+    setIsLoading(true);
+    try {
+      const res = await analyzeLegalIssueAction(text);
+      if (res.success && res.data) {
+        // Save the AI response and original text to sessionStorage
+        sessionStorage.setItem("nyaya_ai_analysis", JSON.stringify({
+          originalIssue: text,
+          ...res.data
+        }));
+        // Navigate to the case analysis page
+        router.push("/dashboard/ai-assistant");
+      } else {
+        alert(res.error || "Failed to analyze issue.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="max-w-6xl mx-auto px-6 lg:px-10 py-8 space-y-6">
@@ -63,6 +93,7 @@ export default function DescribeIssuePage() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               maxLength={3000}
+              disabled={isLoading}
             />
             <div className="self-end text-xs font-semibold text-text-light mt-2">
               {text.length} / 3000
@@ -123,8 +154,21 @@ export default function DescribeIssuePage() {
 
           {/* Submit Action */}
           <div className="flex flex-col items-center mt-6 max-w-sm mx-auto w-full">
-            <button className="w-full bg-black text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors shadow-lg shadow-black/10">
-              Analyze My Issue <ArrowRight size={18} />
+            <button 
+              onClick={handleAnalyze}
+              disabled={isLoading || !text.trim()}
+              className="w-full bg-black text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Analyzing Issue...
+                </>
+              ) : (
+                <>
+                  Analyze My Issue <ArrowRight size={18} />
+                </>
+              )}
             </button>
             <div className="flex items-center gap-1.5 mt-3 text-text-muted text-xs font-semibold">
               <Lock size={12} />
