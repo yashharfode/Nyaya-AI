@@ -1,5 +1,6 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/routing";
 import { 
   Send, 
   RefreshCcw,
@@ -55,10 +56,10 @@ export default async function DashboardPage() {
               </div>
             </div>
           </div>
-          <button className="w-full mt-6 bg-text-main text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors shadow-md">
+          <a href="tel:112" className="w-full mt-6 bg-red-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-red-700 transition-colors shadow-md">
             <Phone size={18} />
-            {t("immediateHelp.button")}
-          </button>
+            Call 112 (Emergency)
+          </a>
         </div>
       </div>
 
@@ -66,45 +67,45 @@ export default async function DashboardPage() {
       <section>
         <h2 className="text-lg font-bold mb-4">{t("quickActions.title")}</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <button className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
+          <Link href="/dashboard/ai-assistant" className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-bg-subtle rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <MessageSquare size={24} className="text-text-main" />
             </div>
             <h4 className="font-bold text-sm mb-1">{t("quickActions.ai.title")}</h4>
             <p className="text-xs text-text-muted">{t("quickActions.ai.desc")}</p>
-          </button>
+          </Link>
           
-          <button className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
+          <Link href="/dashboard/describe-issue" className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-bg-subtle rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <FileText size={24} className="text-text-main" />
             </div>
             <h4 className="font-bold text-sm mb-1">{t("quickActions.complaint.title")}</h4>
             <p className="text-xs text-text-muted">{t("quickActions.complaint.desc")}</p>
-          </button>
+          </Link>
 
-          <button className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
+          <Link href="/dashboard/evidence" className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-bg-subtle rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <ClipboardList size={24} className="text-text-main" />
             </div>
             <h4 className="font-bold text-sm mb-1">{t("quickActions.evidence.title")}</h4>
             <p className="text-xs text-text-muted">{t("quickActions.evidence.desc")}</p>
-          </button>
+          </Link>
 
-          <button className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
+          <Link href="/dashboard/navigator" className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-bg-subtle rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Landmark size={24} className="text-text-main" />
             </div>
             <h4 className="font-bold text-sm mb-1">{t("quickActions.navigator.title")}</h4>
             <p className="text-xs text-text-muted">{t("quickActions.navigator.desc")}</p>
-          </button>
+          </Link>
 
-          <button className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
+          <Link href="/dashboard/cases" className="bg-white border border-border-main rounded-2xl p-5 text-left hover:shadow-md transition-shadow group flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-bg-subtle rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Folder size={24} className="text-text-main" />
             </div>
             <h4 className="font-bold text-sm mb-1">{t("quickActions.cases.title")}</h4>
             <p className="text-xs text-text-muted">{t("quickActions.cases.desc")}</p>
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -115,7 +116,7 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">{t("recentCases.title")}</h2>
-            <button className="text-sm font-semibold text-text-muted hover:text-text-main">{t("recentCases.viewAll")}</button>
+            <Link href="/dashboard/cases" className="text-sm font-semibold text-text-muted hover:text-text-main">{t("recentCases.viewAll")}</Link>
           </div>
           <div className="bg-white border border-border-main rounded-2xl overflow-hidden shadow-sm">
             <table className="w-full text-left text-sm">
@@ -137,9 +138,9 @@ export default async function DashboardPage() {
                   </td>
                   <td className="px-6 py-4 text-text-muted">12 May 2025</td>
                   <td className="px-6 py-4 text-center">
-                    <button className="p-2 text-text-muted hover:text-brand-primary rounded-lg hover:bg-brand-primary/10 transition-colors">
+                    <Link href="/dashboard/cases" className="inline-block p-2 text-text-muted hover:text-brand-primary rounded-lg hover:bg-brand-primary/10 transition-colors">
                       <Eye size={18} />
-                    </button>
+                    </Link>
                   </td>
                 </tr>
                 <tr className="hover:bg-bg-subtle/50 transition-colors">
@@ -151,9 +152,9 @@ export default async function DashboardPage() {
                   </td>
                   <td className="px-6 py-4 text-text-muted">10 May 2025</td>
                   <td className="px-6 py-4 text-center">
-                    <button className="p-2 text-text-muted hover:text-brand-primary rounded-lg hover:bg-brand-primary/10 transition-colors">
+                    <Link href="/dashboard/cases" className="inline-block p-2 text-text-muted hover:text-brand-primary rounded-lg hover:bg-brand-primary/10 transition-colors">
                       <Eye size={18} />
-                    </button>
+                    </Link>
                   </td>
                 </tr>
                 <tr className="hover:bg-bg-subtle/50 transition-colors">
@@ -165,9 +166,9 @@ export default async function DashboardPage() {
                   </td>
                   <td className="px-6 py-4 text-text-muted">08 May 2025</td>
                   <td className="px-6 py-4 text-center">
-                    <button className="p-2 text-text-muted hover:text-brand-primary rounded-lg hover:bg-brand-primary/10 transition-colors">
+                    <Link href="/dashboard/cases" className="inline-block p-2 text-text-muted hover:text-brand-primary rounded-lg hover:bg-brand-primary/10 transition-colors">
                       <Eye size={18} />
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               </tbody>
@@ -213,10 +214,10 @@ export default async function DashboardPage() {
 
             </div>
 
-            <button className="w-full mt-8 py-3 text-sm font-semibold border border-border-main rounded-xl hover:bg-bg-subtle transition-colors shadow-sm flex items-center justify-center gap-2">
+            <Link href="/dashboard/cases" className="w-full mt-8 py-3 text-sm font-semibold border border-border-main rounded-xl hover:bg-bg-subtle transition-colors shadow-sm flex items-center justify-center gap-2">
               {t("activity.viewAll")}
               <span className="text-lg leading-none">→</span>
-            </button>
+            </Link>
           </div>
         </div>
 
