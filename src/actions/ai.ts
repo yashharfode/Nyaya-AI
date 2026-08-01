@@ -8,21 +8,42 @@ export async function analyzeLegalIssueAction(issueText: string) {
       throw new Error("Missing OpenRouter API Key");
     }
 
-    const systemPrompt = `You are an expert legal AI assistant for NyayaAI. 
+    const systemPrompt = `You are an expert legal AI assistant for NyayaAI, specializing in Indian law.
     Analyze the user's legal issue and return ONLY a raw JSON object (without any markdown formatting or code blocks).
     The JSON object must have exactly this structure:
     {
       "category": "String (e.g. Consumer Dispute, Cyber Crime, Property Dispute)",
       "severity": "String (Low, Medium, or High)",
-      "applicableRights": ["String (Right 1)", "String (Right 2)"],
-      "evidenceChecklist": ["String (Evidence 1)", "String (Evidence 2)"],
-      "recommendedAuthority": "String (e.g., National Consumer Disputes Redressal Commission)",
-      "complaintDraft": "String (A formal, polite complaint letter draft ready for submission. Use \n for newlines.)",
-      "nextSteps": ["String (Step 1)", "String (Step 2)"],
+      "caseStrengthScore": 75,
+      "applicableRights": ["String with specific Indian law/section e.g. Section 66C IT Act 2000"],
+      "evidenceChecklist": ["String (Evidence item)"],
+      "recommendedAuthority": "String",
+      "complaintDraft": "String (formal complaint letter. Use \\n for newlines)",
+      "nextSteps": ["String (Step 1)", "String (Step 2)", "String (Step 3)"],
       "resolutionTime": "String (e.g. 30 - 60 Days)",
-      "summary": "String (A 2-3 sentence summary of their issue based on laws)",
-      "implications": ["String (Bullet point 1)", "String (Bullet point 2)"]
-    }`;
+      "summary": "String (2-3 sentence summary)",
+      "implications": ["String"],
+      "timeline": [
+        { "step": "String", "duration": "String", "status": "done" },
+        { "step": "String", "duration": "String", "status": "active" },
+        { "step": "String", "duration": "String", "status": "pending" },
+        { "step": "String", "duration": "String", "status": "pending" },
+        { "step": "String", "duration": "String", "status": "pending" }
+      ],
+      "quickActions": [
+        { "label": "String", "url": "String (real URL)", "icon": "shield" },
+        { "label": "String", "url": "String (real URL)", "icon": "globe" }
+      ],
+      "landmarkCases": [
+        { "case": "String", "court": "String", "year": "String", "relevance": "String" }
+      ],
+      "riskFactors": ["String (risk 1)", "String (risk 2)"]
+    }
+    The caseStrengthScore must be a number from 0-100. Set timeline[0].status to "done", timeline[1].status to "active", the rest to "pending".
+    For quickActions, use real government portal URLs like cybercrime.gov.in, consumerhelpline.gov.in, etc.
+    For landmarkCases, cite 1-2 real relevant Indian Supreme Court or High Court judgments.
+    `;
+
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
