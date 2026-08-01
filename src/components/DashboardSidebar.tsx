@@ -13,7 +13,9 @@ import {
   Landmark, 
   BookOpen, 
   ShieldCheck, 
-  Settings 
+  Settings,
+  Headphones,
+  ArrowRight
 } from "lucide-react";
 
 export default function DashboardSidebar() {
@@ -69,22 +71,40 @@ export default function DashboardSidebar() {
         })}
       </div>
 
-      {/* Upgrade Block */}
-      <div className="p-4 mb-4">
-        <div className="bg-white border border-border-main rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="bg-black text-white p-1.5 rounded-lg">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <path d="M2 20h20v2H2v-2zm1.5-2L2 9l5 3 5-7 5 7 5-3-1.5 9h-17z" />
-              </svg>
-            </div>
-            <h4 className="font-bold text-sm text-text-main">Upgrade to Pro</h4>
+      {/* Upgrade Block & Help */}
+      <div className="p-4 mb-4 space-y-4">
+        
+        {/* Upgrade Button */}
+        <Link 
+          href="/dashboard/upgrade"
+          className={`flex items-center justify-between w-full p-4 rounded-2xl transition-all shadow-sm group ${
+            pathname === "/dashboard/upgrade" 
+              ? "bg-black text-white" 
+              : "bg-black text-white hover:bg-gray-800"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M2 20h20v2H2v-2zm1.5-2L2 9l5 3 5-7 5 7 5-3-1.5 9h-17z" />
+            </svg>
+            <span className="font-bold text-sm">Upgrade to Pro</span>
           </div>
-          <p className="text-xs text-text-muted mb-4 leading-tight">
-            Unlock advanced drafting, case research & priority support.
+          <span className="bg-white/20 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider">
+            PRO
+          </span>
+        </Link>
+
+        {/* Need Help Card */}
+        <div className="bg-bg-subtle border border-border-main rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <Headphones size={18} className="text-text-main" />
+            <h4 className="font-bold text-sm text-text-main">Need Help?</h4>
+          </div>
+          <p className="text-[11px] text-text-muted mb-4 leading-relaxed font-medium">
+            Our support team is always here for you.
           </p>
-          <button className="w-full bg-black text-white text-xs font-bold py-2.5 rounded-xl hover:bg-gray-800 transition-colors">
-            Upgrade Now
+          <button className="w-full bg-white border border-border-main text-text-main text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 shadow-sm">
+            Contact Support <ArrowRight size={14} />
           </button>
         </div>
       </div>
