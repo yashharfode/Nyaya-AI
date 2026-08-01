@@ -18,8 +18,22 @@ function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }
   if (!text) return null;
 
   const formatInline = (str: string) => {
-    const parts = str.split(/(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+    const parts = str.split(/(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
     return parts.map((part, index) => {
+      const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (linkMatch) {
+        return (
+          <a
+            key={index}
+            href={linkMatch[2]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-primary underline hover:opacity-80 font-bold break-all"
+          >
+            {linkMatch[1]}
+          </a>
+        );
+      }
       if (part.startsWith("***") && part.endsWith("***")) {
         return <strong key={index} className={`font-black italic ${isUser ? "text-white" : "text-black"}`}>{part.slice(3, -3)}</strong>;
       }
@@ -60,11 +74,20 @@ function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }
       continue;
     }
 
+    // Horizontal Rule (---, ***, ___)
+    if (/^[-*_]{3,}$/.test(line)) {
+      blocks.push(<hr key={i} className="my-5 border-t-2 border-black/20" />);
+      i++;
+      continue;
+    }
+
     // Disclaimer Callout
-    if (line.includes("Disclaimer:") || line.startsWith("***Disclaimer") || line.startsWith("> [!")) {
+    if (line.includes("Disclaimer:") || line.startsWith("***Disclaimer") || line.startsWith("> [!") || line.startsWith("> ⚠️") || line.startsWith("> Disclaimer")) {
       const cleanDisclaimer = line
         .replace(/^\**Disclaimer:\**\s*/i, "")
         .replace(/^> \[!.*?\]\s*/, "")
+        .replace(/^> ⚠️\s*/, "")
+        .replace(/^>\s*/, "")
         .replace(/\*\*\*$/, "")
         .trim();
       blocks.push(
@@ -76,6 +99,20 @@ function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }
           </div>
         </div>
       );
+      i++;
+      continue;
+    }
+
+    // Blockquote
+    if (line.startsWith("> ")) {
+      const cleanQuote = line.replace(/^>\s*/, "").trim();
+      if (cleanQuote) {
+        blocks.push(
+          <blockquote key={i} className="border-l-4 border-black pl-4 py-2 my-3 bg-bg-subtle/70 rounded-r-xl italic font-semibold text-text-main">
+            {formatInline(cleanQuote)}
+          </blockquote>
+        );
+      }
       i++;
       continue;
     }
@@ -128,42 +165,51 @@ function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }
       }
     }
 
-    // Headings
-    if (line.startsWith("### ")) {
-      blocks.push(
-        <h4 key={i} className="text-base sm:text-lg font-black text-black mt-5 mb-2.5 flex items-center gap-2 bg-white px-4 py-2 rounded-xl border-2 border-black shadow-2xs">
-          {formatInline(line.slice(4))}
-        </h4>
-      );
-      i++;
-      continue;
-    }
-    if (line.startsWith("## ")) {
-      blocks.push(
-        <h3 key={i} className="text-lg sm:text-xl font-black text-black mt-6 mb-3 pb-2 border-b-2 border-black">
-          {formatInline(line.slice(3))}
-        </h3>
-      );
-      i++;
-      continue;
-    }
-    if (line.startsWith("# ")) {
-      blocks.push(
-        <h2 key={i} className="text-xl sm:text-2xl font-black text-black mt-7 mb-4 pb-2 border-b-2 border-black">
-          {formatInline(line.slice(2))}
-        </h2>
-      );
+    // Robust Headings (# to ######) - Skip vacant/empty headings
+    if (/^#{1,6}\s+/.test(line)) {
+      const cleanHeading = line.replace(/^#{1,6}\s+/, "").trim();
+      if (!cleanHeading) {
+        i++;
+        continue;
+      }
+      const levelMatch = line.match(/^#+/);
+      const level = levelMatch ? levelMatch[0].length : 1;
+
+      if (level === 1) {
+        blocks.push(
+          <h2 key={i} className="text-xl sm:text-2xl font-black text-black mt-7 mb-4 pb-2 border-b-2 border-black">
+            {formatInline(cleanHeading)}
+          </h2>
+        );
+      } else if (level === 2) {
+        blocks.push(
+          <h3 key={i} className="text-lg sm:text-xl font-black text-black mt-6 mb-3 pb-2 border-b-2 border-black">
+            {formatInline(cleanHeading)}
+          </h3>
+        );
+      } else {
+        blocks.push(
+          <h4 key={i} className="text-base sm:text-lg font-black text-black mt-5 mb-2.5 flex items-center gap-2 bg-white px-4 py-2 rounded-xl border-2 border-black shadow-2xs">
+            {formatInline(cleanHeading)}
+          </h4>
+        );
+      }
       i++;
       continue;
     }
 
-    // Lists (*, -, 1., 2.)
-    if (/^[\*\-]\s+/.test(line)) {
+    // Lists (*, -, +, 1., 2.) - Skip vacant/empty bullet points
+    if (/^[\*\-\+]\s+/.test(line)) {
+      const cleanBullet = line.replace(/^[\*\-\+]\s+/, "").trim();
+      if (!cleanBullet) {
+        i++;
+        continue;
+      }
       blocks.push(
         <div key={i} className="flex items-start gap-2.5 my-1.5 ml-2">
           <span className={`${isUser ? "text-white" : "text-black"} font-black text-base leading-none mt-0.5`}>●</span>
           <p className="text-sm font-bold leading-relaxed flex-1">
-            {formatInline(line.replace(/^[\*\-]\s+/, ""))}
+            {formatInline(cleanBullet)}
           </p>
         </div>
       );
@@ -172,13 +218,19 @@ function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }
     }
     if (/^\d+\.\s+/.test(line)) {
       const match = line.match(/^(\d+)\.\s+(.*)/);
+      const numberText = match ? match[1] : "•";
+      const cleanText = match ? match[2].trim() : line;
+      if (!cleanText) {
+        i++;
+        continue;
+      }
       blocks.push(
         <div key={i} className="flex items-start gap-2.5 my-2 ml-1">
           <span className="bg-black text-white px-2 py-0.5 rounded-md text-xs font-black shrink-0 mt-0.5">
-            {match ? match[1] : "•"}
+            {numberText}
           </span>
           <p className="text-sm font-bold leading-relaxed flex-1">
-            {formatInline(match ? match[2] : line)}
+            {formatInline(cleanText)}
           </p>
         </div>
       );
