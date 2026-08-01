@@ -7,7 +7,7 @@ import {
   ShoppingCart, ShieldAlert, Clock, Bot, Lightbulb,
   ArrowRight, ShieldCheck, PhoneCall, Star, Loader2,
   FileText, CheckSquare, Landmark, Scale, Plus, Send, MessageSquare, Trash2,
-  Zap, Brain, ChevronDown, ChevronUp, AlertTriangle, Menu, X, History, Copy, Check, Mic, MicOff
+  Zap, Brain, ChevronDown, ChevronUp, AlertTriangle, Menu, X, History, Copy, Check, Mic, MicOff, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc, arrayUnion } from "firebase/firestore";
@@ -297,6 +297,50 @@ export default function CaseAnalysisPage() {
   const [selectedModel, setSelectedModel] = useState<string>("inclusionai/ling-3.0-flash:free");
   const [enableReasoning, setEnableReasoning] = useState<boolean>(true);
   const [openReasoningMsg, setOpenReasoningMsg] = useState<Record<number, boolean>>({});
+  const [showHistorySidebar, setShowHistorySidebar] = useState<boolean>(true);
+  const [enableFollowUps, setEnableFollowUps] = useState<boolean>(true);
+
+  const getFollowUpQuestions = (content: any): string[] => {
+    const text = typeof content === "object" ? JSON.stringify(content) : String(content || "");
+    const lines = text.split("\n");
+    const questionBullets = lines
+      .filter(l => l.trim().startsWith("- [") && l.trim().endsWith("]"))
+      .map(l => l.trim().slice(3, -1));
+    if (questionBullets.length > 0) return questionBullets.slice(0, 3);
+
+    const lower = text.toLowerCase();
+    if (lower.includes("consumer") || lower.includes("refund")) {
+      return [
+        "What is the step-by-step procedure to file in Consumer Court?",
+        "Can I claim compensation for mental harassment along with a refund?",
+        "What documents and bills do I need as evidence?"
+      ];
+    } else if (lower.includes("tenant") || lower.includes("landlord") || lower.includes("rent")) {
+      return [
+        "What should I do if my landlord refuses to receive the legal notice?",
+        "Can I deduct the security deposit from the last month's rent?",
+        "How long does a rent authority dispute usually take?"
+      ];
+    } else if (lower.includes("cyber") || lower.includes("fraud") || lower.includes("hack") || lower.includes("police")) {
+      return [
+        "How do I track my complaint status on cybercrime.gov.in?",
+        "Can I freeze the fraud bank transaction immediately?",
+        "What is the punishment under the IT Act for this crime?"
+      ];
+    } else if (lower.includes("notice") || lower.includes("draft")) {
+      return [
+        "How many days should I give the opposite party to respond?",
+        "Should I send the notice via Registered Post or Email?",
+        "What happens if they do not reply to this legal notice?"
+      ];
+    } else {
+      return [
+        "What is the limitation period to file a case for this issue?",
+        "What are the immediate legal steps I should take today?",
+        "Can you draft a formal follow-up letter or email for this?"
+      ];
+    }
+  };
 
   const toggleReasoningMsg = (index: number) => {
     setOpenReasoningMsg(prev => ({ ...prev, [index]: !prev[index] }));
@@ -324,9 +368,10 @@ export default function CaseAnalysisPage() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (usr) => {
       setUser(usr);
+      if (!usr) router.push("/login");
     });
     return () => unsub();
-  }, []);
+  }, [router]);
 
   // Check sessionStorage once when user loads (from Customize with AI button on Resources page)
   useEffect(() => {
@@ -389,10 +434,6 @@ export default function CaseAnalysisPage() {
       setRevealStep(7);
     }
   }, [activeChat?.id, activeChat?.isNewAnalysis]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat?.messages]);
 
   const handleNewChat = async () => {
     if (!user) return;
@@ -728,35 +769,44 @@ export default function CaseAnalysisPage() {
     <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 h-[calc(100vh-80px)] flex gap-6 overflow-hidden print:h-auto print:block">
       
       {/* Sidebar - History (Desktop) */}
-      <div className="hidden lg:flex w-72 shrink-0 flex-col bg-white border-2 border-border-main rounded-3xl overflow-hidden print:hidden shadow-xs">
-        <div className="p-4 border-b-2 border-border-main">
-          <button 
-            onClick={handleNewChat}
-            className="w-full flex items-center justify-center gap-2 bg-black text-white font-black py-3.5 rounded-2xl hover:bg-gray-800 transition-colors shadow-sm"
-          >
-            <Plus size={18} />
-            New Conversation
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          <p className="text-xs font-black text-text-muted uppercase tracking-wider mb-4 px-2">Recent Chats</p>
-          {chats.length === 0 && (
-            <p className="text-sm text-text-muted px-2">No history yet.</p>
-          )}
-          {chats.map(chat => (
+      {showHistorySidebar && (
+        <div className="hidden lg:flex w-72 shrink-0 flex-col bg-white border-2 border-border-main rounded-3xl overflow-hidden print:hidden shadow-xs transition-all">
+          <div className="p-4 border-b-2 border-border-main flex items-center gap-2">
             <button 
-              key={chat.id}
-              onClick={() => setCurrentChatId(chat.id)}
-              className={`w-full text-left flex items-center gap-3 p-3.5 rounded-xl transition-colors ${
-                currentChatId === chat.id ? "bg-bg-subtle font-black text-text-main border-2 border-black shadow-2xs" : "text-text-muted hover:bg-gray-50 font-bold"
-              }`}
+              onClick={handleNewChat}
+              className="flex-1 flex items-center justify-center gap-2 bg-black text-white font-black py-3.5 rounded-2xl hover:bg-gray-800 transition-colors shadow-sm"
             >
-              <MessageSquare size={16} className={currentChatId === chat.id ? "text-black shrink-0" : "shrink-0"} />
-              <span className="truncate text-sm flex-1">{typeof chat.title === 'object' ? (chat.title?.name || chat.title?.title || JSON.stringify(chat.title)) : chat.title}</span>
+              <Plus size={18} />
+              New Conversation
             </button>
-          ))}
+            <button
+              onClick={() => setShowHistorySidebar(false)}
+              className="w-11 h-11 rounded-2xl bg-bg-subtle border border-border-main flex items-center justify-center text-text-main hover:bg-gray-200 transition-colors shrink-0"
+              title="Hide Conversation History"
+            >
+              <PanelLeftClose size={18} />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <p className="text-xs font-black text-text-muted uppercase tracking-wider mb-4 px-2">Recent Chats</p>
+            {chats.length === 0 && (
+              <p className="text-sm text-text-muted px-2">No history yet.</p>
+            )}
+            {chats.map(chat => (
+              <button 
+                key={chat.id}
+                onClick={() => setCurrentChatId(chat.id)}
+                className={`w-full text-left flex items-center gap-3 p-3.5 rounded-xl transition-colors ${
+                  currentChatId === chat.id ? "bg-bg-subtle font-black text-text-main border-2 border-black shadow-2xs" : "text-text-muted hover:bg-gray-50 font-bold"
+                }`}
+              >
+                <MessageSquare size={16} className={currentChatId === chat.id ? "text-black shrink-0" : "shrink-0"} />
+                <span className="truncate text-sm flex-1">{typeof chat.title === 'object' ? (chat.title?.name || chat.title?.title || JSON.stringify(chat.title)) : chat.title}</span>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Mobile Drawer Overlay */}
       {showMobileSidebar && (
@@ -828,11 +878,18 @@ export default function CaseAnalysisPage() {
           <div className="flex items-center justify-between w-full sm:w-auto">
              <div className="flex items-center gap-3">
                <button
-                 onClick={() => setShowMobileSidebar(true)}
-                 className="lg:hidden w-10 h-10 rounded-xl bg-bg-subtle border border-border-main flex items-center justify-center text-text-main hover:bg-gray-200 shrink-0 shadow-2xs"
-                 title="View Conversation History"
+                 onClick={() => {
+                   if (window.innerWidth < 1024) {
+                     setShowMobileSidebar(true);
+                   } else {
+                     setShowHistorySidebar(prev => !prev);
+                   }
+                 }}
+                 className="w-10 h-10 rounded-xl bg-bg-subtle border border-border-main flex items-center justify-center text-text-main hover:bg-gray-200 shrink-0 shadow-2xs"
+                 title={showHistorySidebar ? "Hide Conversation History" : "Show Conversation History"}
                >
-                 <Menu size={20} />
+                 {showHistorySidebar ? <PanelLeftClose size={20} className="hidden lg:block" /> : <PanelLeftOpen size={20} className="hidden lg:block" />}
+                 <Menu size={20} className="lg:hidden" />
                </button>
                <div className="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
                   <Bot size={20} />
@@ -984,6 +1041,34 @@ export default function CaseAnalysisPage() {
                     ) : (
                       <FormattedLegalText text={String(msg.content || "")} isUser={msg.role === "user"} />
                     )}
+
+                    {/* Interactive AI Follow-Up Questions */}
+                    {msg.role !== "user" && enableFollowUps && (
+                      <div className="mt-5 pt-3 border-t border-border-main/60 flex flex-col gap-2 print:hidden">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-text-muted">
+                          <Lightbulb size={14} className="text-amber-500 shrink-0" />
+                          <span>Recommended Follow-Up Questions (Click to ask):</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {getFollowUpQuestions(msg.content).map((q, qIndex) => (
+                            <button
+                              key={qIndex}
+                              type="button"
+                              onClick={() => {
+                                setInputText(q);
+                                const inputEl = document.querySelector('input[type="text"]') as HTMLInputElement;
+                                if (inputEl) inputEl.focus();
+                              }}
+                              disabled={isSending}
+                              className="px-3.5 py-2 bg-white hover:bg-black hover:text-white border-2 border-border-main rounded-xl text-xs font-bold text-text-main transition-all text-left shadow-2xs flex items-center gap-1.5 group"
+                            >
+                              <span>{q}</span>
+                              <ArrowRight size={13} className="opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1073,6 +1158,18 @@ export default function CaseAnalysisPage() {
                 <span>Voice Auto Spell-Check:</span>
                 <strong className={autoCorrectSpelling ? "text-brand-primary font-extrabold" : "text-text-light"}>
                   {autoCorrectSpelling ? "ON (EN/Hinglish)" : "OFF"}
+                </strong>
+              </button>
+              <span>•</span>
+              <button
+                type="button"
+                onClick={() => setEnableFollowUps(prev => !prev)}
+                className="flex items-center gap-1 hover:text-black transition-colors"
+                title="Toggle interactive AI Follow-Up Question suggestions (default ON)"
+              >
+                <span>Follow-Up Questions:</span>
+                <strong className={enableFollowUps ? "text-brand-primary font-extrabold" : "text-text-light"}>
+                  {enableFollowUps ? "ON" : "OFF"}
                 </strong>
               </button>
               <span>•</span>

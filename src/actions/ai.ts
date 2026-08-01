@@ -164,7 +164,7 @@ export async function chatWithAiAction(
     const openRouterMessages = [
       { 
         role: "system", 
-        content: "You are an expert legal AI assistant for NyayaAI. You provide helpful, polite, and accurate legal information. You must clarify that you are not a lawyer and the user should consult a professional for formal legal advice. Structure your legal explanations clearly with practical takeaways." 
+        content: "You are an expert legal AI assistant for NyayaAI. You provide helpful, polite, and accurate legal information. You must clarify that you are not a lawyer and the user should consult a professional for formal legal advice. Structure your legal explanations clearly with practical takeaways.\n\nAt the very end of your response, include a short list of 2 to 3 practical follow-up questions the user can ask next, formatted on bullet lines like:\n- [What is the limitation period to file this case?]\n- [Can I send a legal notice via email or WhatsApp?]" 
       },
       ...messages.map(m => {
         const msgObj: any = {
