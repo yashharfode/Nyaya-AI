@@ -91,31 +91,31 @@ export default function CaseAnalysisPage() {
   if (!analysis) {
     return (
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="bg-black border border-gray-800 p-8 rounded-2xl shadow-xl text-center max-w-lg w-full">
-          <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-800">
-            <Bot size={32} className="text-white" />
+        <div className="bg-white border border-border-main p-8 rounded-2xl shadow-sm text-center max-w-lg w-full">
+          <div className="w-16 h-16 bg-bg-subtle rounded-full flex items-center justify-center mx-auto mb-6 border border-border-main">
+            <Bot size={32} className="text-text-main" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">AI Case Assistant</h2>
-          <p className="text-gray-400 mb-8">Follow these steps to get a complete case analysis:</p>
+          <h2 className="text-2xl font-bold text-text-main mb-2">AI Case Assistant</h2>
+          <p className="text-text-muted mb-8">Follow these steps to get a complete case analysis:</p>
           
           <div className="space-y-4 mb-8 text-left">
             <div className="flex gap-4">
-              <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold shrink-0">1</div>
-              <p className="text-sm font-medium text-white mt-0.5">Please upload or paste the details of your legal issue</p>
+              <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">1</div>
+              <p className="text-sm font-medium text-text-main mt-0.5">Please upload or paste the details of your legal issue</p>
             </div>
             <div className="flex gap-4">
-              <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold shrink-0">2</div>
-              <p className="text-sm font-medium text-white mt-0.5">Ensure all relevant documents are attached for a thorough analysis</p>
+              <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">2</div>
+              <p className="text-sm font-medium text-text-main mt-0.5">Ensure all relevant documents are attached for a thorough analysis</p>
             </div>
             <div className="flex gap-4">
-              <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold shrink-0">3</div>
-              <p className="text-sm font-medium text-white mt-0.5">Specify the jurisdiction if known</p>
+              <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">3</div>
+              <p className="text-sm font-medium text-text-main mt-0.5">Specify the jurisdiction if known</p>
             </div>
           </div>
 
           <button 
             onClick={() => router.push("/dashboard/describe-issue")}
-            className="w-full bg-white text-black px-6 py-4 rounded-xl font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-black text-white px-6 py-4 rounded-xl font-bold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
           >
             Start New Analysis <ArrowRight size={18} />
           </button>
