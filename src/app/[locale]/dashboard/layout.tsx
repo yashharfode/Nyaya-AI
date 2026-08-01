@@ -1,6 +1,6 @@
 import React from "react";
-import DashboardNavbar from "@/components/DashboardNavbar";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import DashboardContentWrapper from "@/components/DashboardContentWrapper";
 import { getSession } from "@/actions/auth";
 import { SidebarProvider } from "@/components/SidebarContext";
 
@@ -17,13 +17,10 @@ export default async function DashboardLayout({
         {/* Sidebar - hidden on mobile, block on lg */}
         <DashboardSidebar />
         
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col lg:pl-[280px]">
-          <DashboardNavbar user={session} />
-          <main className="flex-1 overflow-x-hidden">
-            {children}
-          </main>
-        </div>
+        {/* Main Content Area with Dynamic Padding */}
+        <DashboardContentWrapper user={session}>
+          {children}
+        </DashboardContentWrapper>
       </div>
     </SidebarProvider>
   );

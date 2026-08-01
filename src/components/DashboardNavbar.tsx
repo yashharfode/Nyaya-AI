@@ -3,14 +3,14 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
-import { Bell, Search, LogOut, Menu } from "lucide-react";
+import { Bell, Search, LogOut, Menu, PanelLeft, PanelLeftClose } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
 import { useSidebar } from "@/components/SidebarContext";
 
 export default function DashboardNavbar({ user }: { user?: { name: string; email: string } | null }) {
   const t = useTranslations("Dashboard");
   const router = useRouter();
-  const { toggle } = useSidebar();
+  const { toggle, isCollapsed, toggleCollapse } = useSidebar();
 
   const handleLogout = async () => {
     await logoutAction();
@@ -29,6 +29,17 @@ export default function DashboardNavbar({ user }: { user?: { name: string; email
         >
           <Menu size={24} />
         </button>
+        
+        {/* Desktop Sidebar Collapse / Expand Toggle Button */}
+        <button
+          onClick={toggleCollapse}
+          className="hidden lg:flex p-2.5 text-text-main hover:bg-bg-subtle border border-border-main hover:border-black rounded-xl transition-all"
+          title={isCollapsed ? "Expand Sidebar (⌘B)" : "Minimize Sidebar (⌘B)"}
+          aria-label="Toggle Sidebar"
+        >
+          {isCollapsed ? <PanelLeft size={20} /> : <PanelLeftClose size={20} />}
+        </button>
+
         <div className="relative flex items-center w-full">
           <Search size={18} className="absolute left-4 text-text-light" />
           <input 
