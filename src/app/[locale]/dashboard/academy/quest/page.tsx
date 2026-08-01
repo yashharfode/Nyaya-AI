@@ -13,6 +13,8 @@ import {
   ArrowRight
 } from "lucide-react";
 import { Link } from "@/i18n/routing";
+import { auth, db } from "@/lib/firebase";
+import { doc, updateDoc, increment, arrayUnion, getDoc, setDoc } from "firebase/firestore";
 
 export default function QuestPage() {
   const router = useRouter();
@@ -66,18 +68,34 @@ export default function QuestPage() {
     );
   }
 
-  const handleSelect = (id: string) => {
+  const handleSelect = async (id: string) => {
     if (showResult) return;
     setSelectedOption(id);
     setShowResult(true);
 
     if (id === currentQuest.correctOption) {
-      // Award XP
-      setTimeout(() => {
-        const currentXp = parseInt(localStorage.getItem("nyaya_ai_xp") || "0");
-        localStorage.setItem("nyaya_ai_xp", (currentXp + currentQuest.xp).toString());
-        setXpEarned(true);
-      }, 500);
+      if (auth.currentUser && questId) {
+        try {
+          const userRef = doc(db, "users", auth.currentUser.uid);
+          const userSnap = await getDoc(userRef);
+          
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            const completed = data.completedQuests || [];
+            
+            // Only award XP if they haven't completed this quest before
+            if (!completed.includes(questId)) {
+              await updateDoc(userRef, {
+                xp: increment(currentQuest.xp),
+                completedQuests: arrayUnion(questId)
+              });
+              setXpEarned(true);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to update XP:", error);
+        }
+      }
     }
   };
 

@@ -12,17 +12,41 @@ import {
   Car,
   Home,
   CheckCircle2,
-  Lock
+  Lock,
+  Loader2
 } from "lucide-react";
+import { auth, db } from "@/lib/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
 
 export default function AcademyPage() {
   const [xp, setXp] = useState(0);
+  const [completedQuests, setCompletedQuests] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedXp = localStorage.getItem("nyaya_ai_xp");
-    if (savedXp) {
-      setXp(parseInt(savedXp));
-    }
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      if (user) {
+        const unsubscribeDoc = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setXp(data.xp || 0);
+            setCompletedQuests(data.completedQuests || []);
+          }
+          setIsLoading(false);
+        }, (error) => {
+          console.error("Failed to fetch user progress:", error);
+          setIsLoading(false);
+        });
+
+        return () => unsubscribeDoc();
+      } else {
+        setXp(0);
+        setCompletedQuests([]);
+        setIsLoading(false);
+      }
+    });
+
+    return () => unsubscribeAuth();
   }, []);
 
   const quests = [
@@ -32,7 +56,7 @@ export default function AcademyPage() {
       category: "Cyber Security",
       xp: 50,
       icon: <ShieldAlert size={24} className="text-red-600" />,
-      completed: xp >= 50,
+      completed: completedQuests.includes("cyber-fraud"),
       locked: false
     },
     {
@@ -41,8 +65,8 @@ export default function AcademyPage() {
       category: "Citizen Rights",
       xp: 75,
       icon: <Car size={24} className="text-amber-600" />,
-      completed: xp >= 125,
-      locked: xp < 50
+      completed: completedQuests.includes("traffic-stop"),
+      locked: !completedQuests.includes("cyber-fraud")
     },
     {
       id: "tenant-dispute",
@@ -50,10 +74,19 @@ export default function AcademyPage() {
       category: "Property Law",
       xp: 100,
       icon: <Home size={24} className="text-blue-600" />,
-      completed: false,
-      locked: xp < 125
+      completed: completedQuests.includes("tenant-dispute"),
+      locked: !completedQuests.includes("traffic-stop")
     }
   ];
+
+  if (isLoading) {
+    return (
+      <main className="max-w-7xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-[50vh]">
+        <Loader2 size={32} className="animate-spin text-brand-primary mb-4" />
+        <p className="text-text-muted font-semibold">Loading Academy Profile...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-8 font-sans">
