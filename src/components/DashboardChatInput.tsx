@@ -36,38 +36,64 @@ export default function DashboardChatInput() {
   };
 
   return (
-    <div className="bg-white border border-border-main rounded-2xl p-2 shadow-sm focus-within:ring-2 focus-within:ring-brand-primary/20 focus-within:border-brand-primary transition-all">
-      <div className="flex gap-2">
-        <input 
-          type="text" 
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !isLoading) {
-              handleAnalyze();
-            }
-          }}
-          disabled={isLoading}
-          className="flex-1 bg-transparent border-none focus:ring-0 text-text-main placeholder:text-text-light px-4 py-3 outline-none"
-          placeholder={t("searchPlaceholder")}
-        />
-        <button 
-          onClick={handleAnalyze}
-          disabled={isLoading || !text.trim()}
-          className="bg-text-main text-white px-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-black transition-colors shrink-0 disabled:opacity-50 min-w-[140px]"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 size={16} className="animate-spin" />
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <Send size={16} />
-              {t("startChat")}
-            </>
-          )}
-        </button>
+    <div className="space-y-3">
+      <div className="bg-white border border-border-main rounded-2xl p-2 shadow-sm focus-within:ring-2 focus-within:ring-brand-primary/20 focus-within:border-brand-primary transition-all">
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !isLoading) {
+                handleAnalyze();
+              }
+            }}
+            disabled={isLoading}
+            className="flex-1 bg-transparent border-none focus:ring-0 text-text-main placeholder:text-text-light px-4 py-3 outline-none"
+            placeholder={t("searchPlaceholder")}
+          />
+          <button 
+            onClick={handleAnalyze}
+            disabled={isLoading || !text.trim()}
+            className="bg-text-main text-white px-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-black transition-colors shrink-0 disabled:opacity-50 min-w-[140px]"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Send size={16} />
+                {t("startChat")}
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-3 pt-2">
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">{t("examplesTitle")}</p>
+        <div className="flex flex-wrap gap-2">
+          <button 
+            onClick={() => setText(t("examples.ex1"))}
+            className="text-sm px-4 py-2 bg-white border border-border-main rounded-full text-text-main hover:bg-bg-subtle transition-colors shadow-sm"
+          >
+            {t("examples.ex1")}
+          </button>
+          <button 
+            onClick={() => setText(t("examples.ex2"))}
+            className="text-sm px-4 py-2 bg-white border border-border-main rounded-full text-text-main hover:bg-bg-subtle transition-colors shadow-sm"
+          >
+            {t("examples.ex2")}
+          </button>
+          <button 
+            onClick={() => setText(t("examples.ex3"))}
+            className="text-sm px-4 py-2 bg-white border border-border-main rounded-full text-text-main hover:bg-bg-subtle transition-colors shadow-sm"
+          >
+            {t("examples.ex3")}
+          </button>
+        </div>
       </div>
     </div>
   );

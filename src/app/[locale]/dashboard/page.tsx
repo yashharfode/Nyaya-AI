@@ -38,24 +38,6 @@ export default async function DashboardPage() {
           </div>
 
           <DashboardChatInput />
-
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">{t("examplesTitle")}</p>
-            <div className="flex flex-wrap gap-2">
-              <button className="text-sm px-4 py-2 bg-white border border-border-main rounded-full text-text-main hover:bg-bg-subtle transition-colors shadow-sm">
-                {t("examples.ex1")}
-              </button>
-              <button className="text-sm px-4 py-2 bg-white border border-border-main rounded-full text-text-main hover:bg-bg-subtle transition-colors shadow-sm">
-                {t("examples.ex2")}
-              </button>
-              <button className="text-sm px-4 py-2 bg-white border border-border-main rounded-full text-text-main hover:bg-bg-subtle transition-colors shadow-sm">
-                {t("examples.ex3")}
-              </button>
-              <button className="p-2 text-text-muted hover:text-text-main bg-white border border-border-main rounded-full shadow-sm hover:bg-bg-subtle transition-colors">
-                <RefreshCcw size={16} />
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Emergency Help Card */}
