@@ -32,7 +32,8 @@ export default function DashboardSidebar() {
   const navLinks = [
     { name: "Home", href: "/dashboard", icon: <Home size={20} /> },
     { name: "Describe Issue", href: "/dashboard/describe-issue", icon: <MessageSquare size={20} /> },
-    { name: "AI Assistant", href: "/dashboard/ai-assistant", icon: <Bot size={20} /> },
+    { name: "AI Legal Interview", href: "/dashboard/legal-interview", icon: <Bot size={20} />, badge: "NEW" },
+    { name: "AI Assistant", href: "/dashboard/ai-assistant", icon: <Headphones size={20} /> },
     { name: "My Cases", href: "/dashboard/cases", icon: <Folder size={20} /> },
     { name: "Documents", href: "/dashboard/documents", icon: <FileText size={20} /> },
     { name: "Evidence Checklist", href: "/dashboard/evidence", icon: <CheckSquare size={20} /> },
@@ -105,7 +106,14 @@ export default function DashboardSidebar() {
                 }`}
               >
                 <span className={isActive ? "text-white" : "text-text-main"}>{link.icon}</span>
-                {!isCollapsed && <span className="truncate">{link.name}</span>}
+                {!isCollapsed && (
+                  <span className="truncate flex-1">{link.name}</span>
+                )}
+                {!isCollapsed && (link as any).badge && (
+                  <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md shrink-0 ${
+                    isActive ? "bg-white text-black" : "bg-black text-white"
+                  }`}>{(link as any).badge}</span>
+                )}
               </Link>
             );
           })}

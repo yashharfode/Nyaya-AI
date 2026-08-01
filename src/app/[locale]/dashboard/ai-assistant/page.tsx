@@ -270,6 +270,25 @@ export default function CaseAnalysisPage() {
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [autoCorrectSpelling, setAutoCorrectSpelling] = useState(true);
+  const [emergencyMode, setEmergencyMode] = useState(false);
+  const [emergencyDismissed, setEmergencyDismissed] = useState(false);
+
+  // Emergency keyword detector — triggers Emergency Mode overlay
+  const EMERGENCY_PATTERNS = [
+    /private.{0,15}photo/i, /intimate.{0,15}video/i, /blackmail/i, /sextortion/i,
+    /threatening me/i, /threatening to/i, /someone threaten/i,
+    /suicide/i, /kill.{0,10}myself/i, /want to die/i,
+    /domestic.{0,10}abuse/i, /beating me/i, /husband.{0,10}hit/i, /wife.{0,10}hit/i,
+    /someone.{0,15}following/i, /being stalked/i, /stalking me/i,
+    /kidnap/i, /abducted/i, /held captive/i,
+    /robbery/i, /mugging/i, /at gunpoint/i,
+    /child.{0,10}abuse/i, /molest/i,
+  ];
+
+  const checkEmergency = (text: string) => {
+    if (emergencyDismissed) return false;
+    return EMERGENCY_PATTERNS.some(p => p.test(text));
+  };
 
   const {
     isRecording: isVoiceRecording,
@@ -449,6 +468,11 @@ export default function CaseAnalysisPage() {
     e.preventDefault();
     if (!inputText.trim() || !user || !currentChatId) return;
     
+    // Check for emergency keywords before sending
+    if (checkEmergency(inputText)) {
+      setEmergencyMode(true);
+    }
+
     // eslint-disable-next-line react-hooks/purity
     const userMessage = { role: "user", content: inputText, timestamp: Date.now() };
     setInputText("");
@@ -767,6 +791,85 @@ export default function CaseAnalysisPage() {
 
   return (
     <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 h-[calc(100vh-80px)] flex gap-6 overflow-hidden print:h-auto print:block">
+      
+      {/* 🚨 EMERGENCY MODE OVERLAY */}
+      {emergencyMode && (
+        <div className="fixed inset-0 z-[100] bg-red-950/95 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden">
+            {/* Red Header */}
+            <div className="bg-red-600 p-6 text-white text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-3xl">🚨</span>
+              </div>
+              <h2 className="text-2xl font-black mb-1">EMERGENCY MODE ACTIVATED</h2>
+              <p className="text-red-100 text-sm font-semibold">We detected a high-risk situation. Help is available.</p>
+            </div>
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              {/* Emergency Helplines */}
+              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 space-y-2">
+                <p className="text-xs font-black text-red-800 uppercase tracking-wider mb-3">📞 Emergency Helplines — Call Now</p>
+                {[
+                  { label: "Police Emergency", number: "100", emoji: "🚔" },
+                  { label: "Women Helpline", number: "1091", emoji: "👩" },
+                  { label: "Cyber Crime", number: "1930", emoji: "🔐" },
+                  { label: "National Emergency", number: "112", emoji: "🆘" },
+                  { label: "Child Helpline", number: "1098", emoji: "🧒" },
+                ].map(h => (
+                  <a
+                    key={h.number}
+                    href={`tel:${h.number}`}
+                    className="flex items-center justify-between px-4 py-2.5 bg-white border border-red-200 rounded-xl hover:bg-red-50 transition-colors group"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-bold text-text-main">
+                      <span>{h.emoji}</span>{h.label}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-red-700 font-black text-lg group-hover:scale-105 transition-transform">
+                      {h.number} <PhoneCall size={16} />
+                    </span>
+                  </a>
+                ))}
+              </div>
+
+              {/* Immediate Advice */}
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 space-y-2">
+                <p className="text-xs font-black text-amber-800 uppercase tracking-wider mb-2">⚠️ Do This Right Now</p>
+                {[
+                  "DO NOT delete any chats, messages, or photos — they are evidence",
+                  "DO NOT pay any money to the blackmailer — it will not stop them",
+                  "Screenshot and save all communication immediately",
+                  "Tell a trusted family member or friend right now",
+                  "Report at cybercrime.gov.in or call 1930 immediately",
+                ].map((advice, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs font-semibold text-amber-900">
+                    <span className="w-4 h-4 rounded-full bg-amber-600 text-white flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">{i + 1}</span>
+                    {advice}
+                  </div>
+                ))}
+              </div>
+
+              {/* Cybercrime portal link */}
+              <a
+                href="https://cybercrime.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 bg-red-600 text-white font-black rounded-xl hover:bg-red-700 transition-colors"
+              >
+                🌐 File Complaint at cybercrime.gov.in
+                <ArrowRight size={16} />
+              </a>
+
+              {/* Dismiss */}
+              <button
+                onClick={() => { setEmergencyMode(false); setEmergencyDismissed(true); }}
+                className="w-full py-2.5 border-2 border-border-main rounded-xl text-sm font-black text-text-muted hover:text-text-main hover:border-black transition-colors"
+              >
+                I understand — Continue to AI Assistant
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Sidebar - History (Desktop) */}
       {showHistorySidebar && (
