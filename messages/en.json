@@ -1,0 +1,169 @@
+{
+  "Navbar": {
+    "title": "NyayaAI",
+    "subtitle": "From Legal Confusion to Legal Action.",
+    "links": {
+      "home": "Home",
+      "howItWorks": "How It Works",
+      "features": "Features",
+      "knowYourRights": "Know Your Rights",
+      "resources": "Resources",
+      "aboutUs": "About Us"
+    },
+    "login": "Login",
+    "getStarted": "Get Started"
+  },
+  "Home": {
+    "badge": "India's First AI Legal Navigation Platform",
+    "title1": "Your Rights. Your Voice.",
+    "title2": "Our AI. Your Justice.",
+    "description": "NyayaAI helps you understand your legal rights, find the right laws, generate legal documents, and guide you to the right authorities — all in one place.",
+    "buttonPrimary": "Describe Your Problem",
+    "buttonSecondary": "Explore Your Rights",
+    "socialProof": "Trusted by 10,000+ users across India",
+    "features": {
+      "aiAssistant": { "title": "AI Legal Assistant", "desc": "Understand your case in simple language" },
+      "evidence": { "title": "Evidence Checklist", "desc": "Know what evidence you need to collect" },
+      "complaint": { "title": "Complaint Generator", "desc": "Generate FIRs, complaints & legal notices" },
+      "laws": { "title": "Applicable Laws", "desc": "Find relevant laws that apply to you" },
+      "navigator": { "title": "Government Navigator", "desc": "Get directed to the right authority/portal" },
+      "dashboard": { "title": "Case Dashboard", "desc": "Track your case status & updates" },
+      "secure": { "title": "100% Secure & Private", "desc": "Your data is safe with us." }
+    },
+    "stats": {
+      "users": { "value": "10K+", "label": "Users Helped" },
+      "docs": { "value": "5K+", "label": "Documents Generated" },
+      "categories": { "value": "20+", "label": "Legal Categories" },
+      "secure": { "value": "100%", "label": "Privacy & Secure" }
+    },
+    "howItWorks": {
+      "title": "How NyayaAI Works",
+      "subtitle": "Simple steps to turn your legal problems into action.",
+      "steps": {
+        "step1": { "title": "Describe Your Problem", "desc": "Tell us your issue in your own words. Type or speak." },
+        "step2": { "title": "AI Analyzes Your Case", "desc": "Our AI analyzes your case and finds the right laws." },
+        "step3": { "title": "Get Legal Guidance", "desc": "Receive guidance, evidence checklist & next steps." },
+        "step4": { "title": "Take Action", "desc": "Generate documents and get directed to the right authority." }
+      }
+    }
+  },
+  "HowItWorksPage": {
+    "badge": "Simple Process. Powerful Results.",
+    "title": "How It Works",
+    "description": "NyayaAI simplifies the legal process and puts the power of justice in your hands.",
+    "steps": {
+      "step1": { "title": "Describe Your Problem", "desc": "Tell us your legal issue in your own words. Type, speak or upload – we understand you." },
+      "step2": { "title": "AI Analyzes Your Case", "desc": "Our AI analyzes your case, finds relevant laws and understands the context." },
+      "step3": { "title": "Get Legal Guidance", "desc": "Receive clear guidance, applicable laws, evidence checklist and next steps." },
+      "step4": { "title": "Take Action", "desc": "Generate legal documents and get directed to the right authority to act." }
+    },
+    "flowchart": {
+      "title": "From Problem to Resolution",
+      "node1": "Your Problem",
+      "node2": "NyayaAI Analysis",
+      "node3": "Guidance & Documents",
+      "node4": "Right Authority"
+    },
+    "trust": {
+      "title": "Built for Trust. Designed for Everyone.",
+      "desc": "NyayaAI is secure, private and easy to use for everyone, whether you're tech-savvy or not."
+    },
+    "features": {
+      "secure": { "title": "100% Secure", "desc": "Your data is encrypted and always protected." },
+      "privacy": { "title": "Privacy First", "desc": "We never share your personal information." },
+      "language": { "title": "Easy Language", "desc": "We explain laws in simple language you can understand." },
+      "everyone": { "title": "For Everyone", "desc": "Designed for citizens, students, professionals and advocates." }
+    }
+  },
+  "LoginPage": {
+    "title": "Welcome Back",
+    "subtitle": "Login to continue your legal journey with NyayaAI.",
+    "emailLabel": "Email or Phone",
+    "emailPlaceholder": "Enter your email or phone number",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot Password?",
+    "loginButton": "Login",
+    "or": "or",
+    "googleButton": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign Up",
+    "features": {
+      "secure": { "title": "100% Secure", "desc": "Your data is encrypted and always protected." },
+      "privacy": { "title": "Privacy First", "desc": "We never share your personal information." },
+      "everyone": { "title": "For Everyone", "desc": "Designed for citizens, students, professionals and advocates." }
+    }
+  },
+  "Dashboard": {
+    "nav": {
+      "home": "Home",
+      "myCases": "My Cases",
+      "documents": "Documents",
+      "resources": "Resources"
+    },
+    "greeting": "Welcome back, {name}!",
+    "helpPrompt": "How can we help you today?",
+    "searchPlaceholder": "Describe your legal issue in your own words...",
+    "startChat": "Start Chat",
+    "examplesTitle": "Try these examples:",
+    "examples": {
+      "ex1": "My online transaction was fraud",
+      "ex2": "My landlord is not returning deposit",
+      "ex3": "Workplace harassment"
+    },
+    "immediateHelp": {
+      "title": "Need Immediate Help?",
+      "desc": "In case of emergency, contact the relevant authorities.",
+      "button": "Emergency Contacts"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "ai": { "title": "AI Legal Assistant", "desc": "Get instant legal guidance" },
+      "complaint": { "title": "Complaint Generator", "desc": "Generate FIRs, complaints & legal notices" },
+      "evidence": { "title": "Evidence Checklist", "desc": "Know what evidence you need to collect" },
+      "navigator": { "title": "Government Navigator", "desc": "Find the right authority or portal" },
+      "cases": { "title": "My Cases", "desc": "Track your cases and documents" }
+    },
+    "recentCases": {
+      "title": "Your Recent Cases",
+      "viewAll": "View All",
+      "columns": { "issue": "Case / Issue", "status": "Status", "updated": "Last Updated", "action": "Action" },
+      "statuses": {
+        "inProgress": "In Progress",
+        "draftGenerated": "Draft Generated",
+        "evidenceCollected": "Evidence Collected"
+      }
+    },
+    "activity": {
+      "title": "Your Activity",
+      "viewAll": "View All Activity",
+      "items": {
+        "doc": "Document generated",
+        "evidence": "Evidence checklist created",
+        "new": "New case created"
+      }
+    },
+    "quote": "\"Justice delayed is justice denied.\"",
+    "quoteSub": "We empower you with knowledge and tools to get the justice you deserve."
+  },
+  "SignupPage": {
+    "title": "Create an Account",
+    "subtitle": "Join NyayaAI and take the first step towards your legal empowerment.",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Enter your full name",
+    "emailLabel": "Email or Phone",
+    "emailPlaceholder": "Enter your email or phone number",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Create a password",
+    "signupButton": "Create Account",
+    "or": "or",
+    "googleButton": "Sign up with Google",
+    "hasAccount": "Already have an account?",
+    "login": "Login",
+    "features": {
+      "secure": { "title": "100% Secure", "desc": "Your data is encrypted and always protected." },
+      "privacy": { "title": "Privacy First", "desc": "We never share your personal information." },
+      "everyone": { "title": "For Everyone", "desc": "Designed for citizens, students, professionals and advocates." }
+    }
+  }
+}

@@ -1,26 +1,44 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+  
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-light: var(--text-light);
+  
+  --color-bg-main: var(--bg-main);
+  --color-bg-subtle: var(--bg-subtle);
+  
+  --color-border-main: var(--border-main);
+  
+  --color-background: var(--bg-main);
+  --color-foreground: var(--text-main);
+  
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --brand-primary: #111827; /* Near black */
+  --brand-secondary: #f3f4f6; /* Gray 100 for subtle buttons/badges */
+  --brand-accent: #6366f1; /* Indigo 500 for the little spark icon */
+  
+  --text-main: #111827;
+  --text-muted: #4b5563; /* Gray 600 for descriptions */
+  --text-light: #9ca3af; /* Gray 400 */
+  
+  --bg-main: #ffffff;
+  --bg-subtle: #f9fafb; /* Gray 50 for the stats background */
+  
+  --border-main: #e5e7eb; /* Gray 200 */
 }
 
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-sans), sans-serif;
 }
