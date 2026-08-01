@@ -36,7 +36,9 @@ export default function CaseAnalysisPage() {
     const data = sessionStorage.getItem("nyaya_ai_analysis");
     if (data) {
       try {
-        setAnalysis(JSON.parse(data));
+        const parsed = JSON.parse(data);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        setAnalysis(parsed);
       } catch (e) {
         console.error("Failed to parse analysis data", e);
       }
@@ -88,15 +90,36 @@ export default function CaseAnalysisPage() {
 
   if (!analysis) {
     return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <h2 className="text-2xl font-bold text-text-main">No analysis found</h2>
-        <p className="text-text-muted">Please describe your issue first to get a case analysis.</p>
-        <button 
-          onClick={() => router.push("/dashboard/describe-issue")}
-          className="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors"
-        >
-          Describe Issue
-        </button>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="bg-black border border-gray-800 p-8 rounded-2xl shadow-xl text-center max-w-lg w-full">
+          <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-800">
+            <Bot size={32} className="text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">AI Case Assistant</h2>
+          <p className="text-gray-400 mb-8">Follow these steps to get a complete case analysis:</p>
+          
+          <div className="space-y-4 mb-8 text-left">
+            <div className="flex gap-4">
+              <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold shrink-0">1</div>
+              <p className="text-sm font-medium text-white mt-0.5">Please upload or paste the details of your legal issue</p>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold shrink-0">2</div>
+              <p className="text-sm font-medium text-white mt-0.5">Ensure all relevant documents are attached for a thorough analysis</p>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold shrink-0">3</div>
+              <p className="text-sm font-medium text-white mt-0.5">Specify the jurisdiction if known</p>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => router.push("/dashboard/describe-issue")}
+            className="w-full bg-white text-black px-6 py-4 rounded-xl font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+          >
+            Start New Analysis <ArrowRight size={18} />
+          </button>
+        </div>
       </main>
     );
   }
@@ -134,8 +157,8 @@ export default function CaseAnalysisPage() {
         </div>
       </div>
 
-      {/* Main Print Container */}
-      <div ref={printRef} className="grid lg:grid-cols-[1fr_320px] gap-8 items-start print:grid-cols-1 print:block">
+      {/* Main Container - Hidden on Print */}
+      <div ref={printRef} className="grid lg:grid-cols-[1fr_320px] gap-8 items-start print:hidden">
         
         {/* Main Content (Left) */}
         <div className="space-y-6">
@@ -311,6 +334,80 @@ export default function CaseAnalysisPage() {
 
         </div>
 
+      </div>
+
+      {/* --- PROFESSIONAL PRINT LAYOUT (HIDDEN ON SCREEN) --- */}
+      <div className="hidden print:block font-serif text-black max-w-4xl mx-auto p-8 bg-white">
+        {/* Header */}
+        <div className="border-b-2 border-black pb-6 mb-8 flex justify-between items-end">
+          <div>
+            <h1 className="text-3xl font-black uppercase tracking-widest mb-1">NyayaAI</h1>
+            <p className="text-sm font-semibold uppercase tracking-wider text-gray-600">Official Legal Analysis Report</p>
+          </div>
+          <div className="text-right text-sm text-gray-600">
+            <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
+            <p><strong>Ref:</strong> NYA-{Math.random().toString(36).substring(2, 8).toUpperCase()}</p>
+          </div>
+        </div>
+
+        {/* Case Summary */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">1. Case Summary</h2>
+          <div className="bg-gray-50 p-4 rounded text-sm leading-relaxed border border-gray-200 whitespace-pre-wrap">
+            {analysis.originalIssue}
+          </div>
+        </div>
+
+        {/* Classification */}
+        <div className="grid grid-cols-2 gap-8 mb-8">
+          <div>
+            <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">2. Classification</h2>
+            <p className="text-sm mb-2"><strong className="text-gray-600">Category:</strong> {analysis.category || "General Dispute"}</p>
+            <p className="text-sm"><strong className="text-gray-600">Severity:</strong> {analysis.severity || "Medium"}</p>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">3. Recommended Forum</h2>
+            <p className="text-sm font-bold text-black">{analysis.recommendedAuthority || "Appropriate Legal Forum"}</p>
+          </div>
+        </div>
+
+        {/* Rights & Evidence */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">4. Applicable Rights & Laws</h2>
+          <ul className="list-disc pl-5 text-sm space-y-2">
+            {(analysis.applicableRights || analysis.implications || []).map((right: string, idx: number) => (
+              <li key={idx}>{right}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">5. Required Evidence</h2>
+          <ul className="list-disc pl-5 text-sm space-y-2">
+            {(analysis.evidenceChecklist || []).map((item: string, idx: number) => (
+              <li key={idx}>{item}</li>
+            ))}
+            {(!analysis.evidenceChecklist || analysis.evidenceChecklist.length === 0) && (
+              <p className="text-sm text-gray-500 italic">No specific evidence listed.</p>
+            )}
+          </ul>
+        </div>
+
+        {/* Complaint Draft */}
+        {analysis.complaintDraft && (
+          <div className="mb-8 break-inside-avoid">
+            <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">6. Official Complaint Draft</h2>
+            <div className="border border-gray-300 p-6 text-sm font-serif leading-loose whitespace-pre-wrap">
+              {analysis.complaintDraft}
+            </div>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="mt-16 pt-8 border-t border-gray-300 text-xs text-center text-gray-500">
+          <p className="font-bold mb-1">Disclaimer</p>
+          <p>This document is generated by NyayaAI for informational purposes and does not constitute formal legal advice. Please consult with a qualified legal professional before taking legal action.</p>
+        </div>
       </div>
     </main>
   );

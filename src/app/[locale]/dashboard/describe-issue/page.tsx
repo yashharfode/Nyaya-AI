@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "@/i18n/routing";
+
 import { 
   ShieldCheck, 
   Upload, 
@@ -28,6 +29,9 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 export default function DescribeIssuePage() {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const handleAnalyze = async () => {
@@ -124,22 +128,62 @@ export default function DescribeIssuePage() {
           <div>
             <h3 className="text-sm font-bold text-text-main mb-3">Add more details <span className="text-text-muted font-semibold">(Optional)</span></h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <button className="flex flex-col items-start p-4 bg-white border border-border-main rounded-2xl hover:border-text-light hover:shadow-md transition-all text-left">
-                <Upload size={20} className="text-text-main mb-3" />
-                <span className="text-sm font-bold text-text-main">Upload Document</span>
-                <span className="text-[10px] text-text-muted mt-1 leading-snug">Attach screenshots, notice, agreements, etc.</span>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    setAttachedFile(e.target.files[0].name);
+                  }
+                }} 
+              />
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className={`flex flex-col items-start p-4 border rounded-2xl hover:shadow-md transition-all text-left ${attachedFile ? 'bg-green-50 border-green-500' : 'bg-white border-border-main hover:border-text-light'}`}
+              >
+                <Upload size={20} className={`${attachedFile ? 'text-green-700' : 'text-text-main'} mb-3`} />
+                <span className={`text-sm font-bold ${attachedFile ? 'text-green-800' : 'text-text-main'}`}>
+                  {attachedFile ? 'Document Attached' : 'Upload Document'}
+                </span>
+                <span className="text-[10px] text-text-muted mt-1 leading-snug line-clamp-2">
+                  {attachedFile ? attachedFile : 'Attach screenshots, notice, agreements, etc.'}
+                </span>
               </button>
-              <button className="flex flex-col items-start p-4 bg-white border border-border-main rounded-2xl hover:border-text-light hover:shadow-md transition-all text-left">
-                <Mic size={20} className="text-text-main mb-3" />
-                <span className="text-sm font-bold text-text-main">Record Voice</span>
-                <span className="text-[10px] text-text-muted mt-1 leading-snug">Explain your issue using voice</span>
+              
+              <button 
+                onClick={() => {
+                  setIsRecording(true);
+                  setTimeout(() => {
+                    setText(prev => prev + (prev ? " " : "") + "My landlord has not returned my security deposit of ₹50,000 for the last 3 months.");
+                    setIsRecording(false);
+                  }, 3000);
+                }}
+                disabled={isRecording}
+                className={`flex flex-col items-start p-4 border rounded-2xl transition-all text-left ${isRecording ? 'bg-red-50 border-red-500 animate-pulse' : 'bg-white border-border-main hover:border-text-light hover:shadow-md'}`}
+              >
+                <Mic size={20} className={`${isRecording ? 'text-red-600 animate-bounce' : 'text-text-main'} mb-3`} />
+                <span className={`text-sm font-bold ${isRecording ? 'text-red-700' : 'text-text-main'}`}>
+                  {isRecording ? 'Recording...' : 'Record Voice'}
+                </span>
+                <span className="text-[10px] text-text-muted mt-1 leading-snug">
+                  {isRecording ? 'Listening...' : 'Explain your issue using voice'}
+                </span>
               </button>
-              <button className="flex flex-col items-start p-4 bg-white border border-border-main rounded-2xl hover:border-text-light hover:shadow-md transition-all text-left">
+              
+              <button 
+                onClick={() => setText(prev => prev + (prev ? "\n" : "") + "[Category: Property Dispute]")}
+                className="flex flex-col items-start p-4 bg-white border border-border-main rounded-2xl hover:border-text-light hover:shadow-md transition-all text-left"
+              >
                 <LayoutGrid size={20} className="text-text-main mb-3" />
                 <span className="text-sm font-bold text-text-main">Select Category</span>
                 <span className="text-[10px] text-text-muted mt-1 leading-snug">Choose the best matching category</span>
               </button>
-              <button className="flex flex-col items-start p-4 bg-white border border-border-main rounded-2xl hover:border-text-light hover:shadow-md transition-all text-left">
+              
+              <button 
+                onClick={() => setText(prev => prev + (prev ? "\n" : "") + `[Date: ${new Date().toLocaleDateString()}, Place: Mumbai, India]`)}
+                className="flex flex-col items-start p-4 bg-white border border-border-main rounded-2xl hover:border-text-light hover:shadow-md transition-all text-left"
+              >
                 <Calendar size={20} className="text-text-main mb-3" />
                 <span className="text-sm font-bold text-text-main">Add Date & Place</span>
                 <span className="text-[10px] text-text-muted mt-1 leading-snug">Help us understand better</span>

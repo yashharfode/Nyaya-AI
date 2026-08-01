@@ -18,6 +18,7 @@ import {
   ChevronRight,
   ChevronDown
 } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import { getSession } from "@/actions/auth";
 
 export default async function SettingsPage() {
@@ -259,10 +260,10 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            <a href="/dashboard/upgrade" className="w-full mt-4 bg-white border border-border-main text-text-main font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-bg-subtle transition-colors shadow-sm text-sm">
+            <Link href="/dashboard/upgrade" className="w-full mt-4 bg-white border border-border-main text-text-main font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-bg-subtle transition-colors shadow-sm text-sm">
               <Crown size={16} className="text-text-main" />
               Upgrade to Pro
-            </a>
+            </Link>
           </div>
 
           {/* Quick Actions */}

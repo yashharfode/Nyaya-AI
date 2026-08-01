@@ -1,5 +1,7 @@
 import React from "react";
-import { Search, FileText, Download, ExternalLink, Sparkles, Folder, FileCheck2, Scale } from "lucide-react";
+import { Search, FileText, Download, ExternalLink, Sparkles, Folder, FileCheck2, Scale, ChevronRight } from "lucide-react";
+
+import { Link } from "@/i18n/routing";
 
 export default function ResourcesPage() {
   const resources = [
@@ -111,12 +113,10 @@ export default function ResourcesPage() {
               <p className="text-indigo-100 text-sm mb-6">
                 Describe your unique situation, and our AI will generate a tailored legal notice or complaint for you in seconds.
               </p>
-              <a 
-                href="/dashboard/ai-assistant" 
-                className="block w-full text-center bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-100 transition-colors shadow-sm"
-              >
-                Generate with AI
-              </a>
+              <Link href="/dashboard/ai-assistant" className="bg-white border border-border-main text-sm font-semibold px-4 py-2 rounded-xl flex items-center justify-between gap-2 hover:bg-bg-subtle transition-colors shadow-sm text-text-main">
+                Ask AI Assistant
+                <ChevronRight size={16} />
+              </Link>
             </div>
           </div>
 
