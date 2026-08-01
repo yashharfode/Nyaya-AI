@@ -26,6 +26,7 @@ import {
   Scale
 } from "lucide-react";
 import { analyzeLegalIssueAction } from "@/actions/ai";
+import { useVoiceRecording } from "@/hooks/useVoiceRecording";
 
 import { auth, db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -83,7 +84,11 @@ const DEMO_LEGAL_DOCUMENTS = [
 export default function DescribeIssuePage() {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+  const { isRecording, interimText, toggleRecording } = useVoiceRecording({
+    onTranscript: (chunk) => {
+      setText((prev) => (prev ? prev.trim() + " " : "") + chunk);
+    },
+  });
   const [attachedFile, setAttachedFile] = useState<string | null>(null);
   const [attachedDocText, setAttachedDocText] = useState<string | null>(null);
   const [showDemoDocs, setShowDemoDocs] = useState(false);
@@ -173,6 +178,23 @@ export default function DescribeIssuePage() {
             <label className="text-sm font-bold text-text-main mb-4 flex items-center gap-1">
               Describe your legal issue <span className="text-red-500">*</span>
             </label>
+            {isRecording && (
+              <div className="flex items-center justify-between bg-red-50 border-2 border-red-400 text-red-900 px-4 py-2.5 rounded-xl mb-3 shadow-xs animate-pulse">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+                  <span className="text-xs sm:text-sm font-bold">
+                    Listening to microphone... {interimText ? `"${interimText}"` : "Speak your issue clearly now"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleRecording}
+                  className="text-red-700 underline text-xs font-black hover:opacity-80"
+                >
+                  Stop Recording
+                </button>
+              </div>
+            )}
             <textarea 
               className="w-full h-48 resize-none bg-transparent outline-none text-text-main placeholder:text-text-light text-sm"
               placeholder="Example: My landlord is not returning my security deposit and not responding to my messages."
@@ -223,22 +245,25 @@ export default function DescribeIssuePage() {
               </button>
               
               <button 
-                onClick={() => {
-                  setIsRecording(true);
-                  setTimeout(() => {
-                    setText(prev => prev + (prev ? " " : "") + "My landlord has not returned my security deposit of ₹50,000 for the last 3 months.");
-                    setIsRecording(false);
-                  }, 3000);
-                }}
-                disabled={isRecording}
-                className={`flex flex-col items-start p-4 border rounded-2xl transition-all text-left ${isRecording ? 'bg-red-50 border-red-500 animate-pulse' : 'bg-white border-border-main hover:border-text-light hover:shadow-md'}`}
+                type="button"
+                onClick={toggleRecording}
+                className={`flex flex-col items-start p-4 border rounded-2xl transition-all text-left ${
+                  isRecording 
+                    ? "bg-red-50 border-red-500 animate-pulse shadow-md" 
+                    : "bg-white border-border-main hover:border-text-light hover:shadow-md"
+                }`}
               >
-                <Mic size={20} className={`${isRecording ? 'text-red-600 animate-bounce' : 'text-text-main'} mb-3`} />
-                <span className={`text-sm font-bold ${isRecording ? 'text-red-700' : 'text-text-main'}`}>
-                  {isRecording ? 'Recording...' : 'Record Voice'}
+                <div className="flex items-center justify-between w-full mb-3">
+                  <Mic size={20} className={isRecording ? "text-red-600 animate-bounce" : "text-text-main"} />
+                  {isRecording && (
+                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
+                  )}
+                </div>
+                <span className={`text-sm font-bold ${isRecording ? "text-red-700" : "text-text-main"}`}>
+                  {isRecording ? "Stop Recording" : "Record Voice"}
                 </span>
                 <span className="text-[10px] text-text-muted mt-1 leading-snug">
-                  {isRecording ? 'Listening...' : 'Explain your issue using voice'}
+                  {isRecording ? "Listening to microphone..." : "Explain your issue using voice"}
                 </span>
               </button>
               

@@ -7,12 +7,13 @@ import {
   ShoppingCart, ShieldAlert, Clock, Bot, Lightbulb,
   ArrowRight, ShieldCheck, PhoneCall, Star, Loader2,
   FileText, CheckSquare, Landmark, Scale, Plus, Send, MessageSquare, Trash2,
-  Zap, Brain, ChevronDown, ChevronUp, AlertTriangle, Menu, X, History, Copy, Check
+  Zap, Brain, ChevronDown, ChevronUp, AlertTriangle, Menu, X, History, Copy, Check, Mic, MicOff
 } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc, arrayUnion } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { chatWithAiAction } from "@/actions/ai";
+import { useVoiceRecording } from "@/hooks/useVoiceRecording";
 
 function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }) {
   if (!text) return null;
@@ -268,6 +269,15 @@ export default function CaseAnalysisPage() {
   const activeChat = chats.find(c => c.id === currentChatId) || null;
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const {
+    isRecording: isVoiceRecording,
+    interimText: voiceInterim,
+    toggleRecording: toggleVoice,
+  } = useVoiceRecording({
+    onTranscript: (chunk) => {
+      setInputText((prev) => (prev ? prev.trim() + " " : "") + chunk);
+    },
+  });
   
   // OpenRouter Model & Reasoning State
   const [selectedModel, setSelectedModel] = useState<string>("inclusionai/ling-3.0-flash:free");
@@ -987,15 +997,45 @@ export default function CaseAnalysisPage() {
         {/* Chat Input */}
         {activeChat && (
           <div className="p-3 sm:p-4 border-t-2 border-border-main bg-white shrink-0 print:hidden shadow-lg">
+            {isVoiceRecording && (
+              <div className="flex items-center justify-between bg-red-50 border-2 border-red-400 text-red-900 px-4 py-2 rounded-xl mb-2.5 shadow-xs animate-pulse max-w-4xl mx-auto">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping shrink-0" />
+                  <span className="text-xs sm:text-sm font-bold truncate">
+                    Listening to microphone... {voiceInterim ? `"${voiceInterim}"` : "Speak your question now"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleVoice}
+                  className="text-red-700 underline text-xs font-black hover:opacity-80 shrink-0 ml-2"
+                >
+                  Stop
+                </button>
+              </div>
+            )}
             <form onSubmit={handleSendMessage} className="relative max-w-4xl mx-auto">
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={`Ask a legal question (Reasoning: ${enableReasoning ? "ON" : "OFF"} • ${selectedModel.split("/")[1]?.replace(":free", "")})...`}
-                className="w-full bg-white border-2 border-black/80 rounded-2xl pl-5 pr-14 py-4 focus:outline-none focus:ring-4 focus:ring-black/10 focus:border-black text-sm font-semibold text-text-main placeholder:text-text-light shadow-sm transition-all"
+                className="w-full bg-white border-2 border-black/80 rounded-2xl pl-5 pr-24 py-4 focus:outline-none focus:ring-4 focus:ring-black/10 focus:border-black text-sm font-semibold text-text-main placeholder:text-text-light shadow-sm transition-all"
                 disabled={isSending}
               />
+              <button
+                type="button"
+                onClick={toggleVoice}
+                disabled={isSending}
+                className={`absolute right-14 top-2 bottom-2 aspect-square flex items-center justify-center rounded-xl transition-all shadow-sm ${
+                  isVoiceRecording
+                    ? "bg-red-600 text-white animate-pulse"
+                    : "bg-bg-subtle text-text-main hover:bg-gray-200 border border-border-main"
+                }`}
+                title={isVoiceRecording ? "Stop microphone recording" : "Record question with microphone"}
+              >
+                {isVoiceRecording ? <MicOff size={16} /> : <Mic size={16} />}
+              </button>
               <button 
                 type="submit"
                 disabled={!inputText.trim() || isSending}
