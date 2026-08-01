@@ -64,3 +64,57 @@ export async function analyzeLegalIssueAction(issueText: string) {
     return { success: false, error: error.message || "Something went wrong" };
   }
 }
+
+export async function chatWithAiAction(messages: { role: string, content: string }[]) {
+  try {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    
+    if (!apiKey) {
+      throw new Error("Missing OpenRouter API Key");
+    }
+
+    // Format messages for OpenRouter
+    const openRouterMessages = [
+      { 
+        role: "system", 
+        content: "You are an expert legal AI assistant for NyayaAI. You provide helpful, polite, and accurate legal information. You must clarify that you are not a lawyer and the user should consult a professional for formal legal advice." 
+      },
+      ...messages.map(m => ({
+        role: m.role === "ai" ? "assistant" : "user",
+        content: m.content
+      }))
+    ];
+
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemma-4-26b-a4b-it:free",
+        messages: openRouterMessages
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("OpenRouter API Error:", errorData);
+      throw new Error("Failed to get AI response. Please try again.");
+    }
+
+    const data = await response.json();
+    let content = data.choices[0]?.message?.content;
+    
+    if (!content) {
+      throw new Error("No content returned from AI");
+    }
+
+    return { success: true, text: content };
+
+  } catch (error: any) {
+    console.error("AI Chat Error:", error);
+    return { success: false, error: error.message || "Something went wrong" };
+  }
+}
+

@@ -3,190 +3,214 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "@/i18n/routing";
 import { 
-  ChevronRight, 
-  CheckCircle2, 
-  Download, 
-  Share2, 
-  Pencil,
-  ShoppingCart,
-  ShieldAlert,
-  Clock,
-  Bot,
-  Lightbulb,
-  ArrowRight,
-  ShieldCheck,
-  PhoneCall,
-  Star,
-  Loader2,
-  FileText,
-  CheckSquare,
-  Landmark,
-  Scale
+  ChevronRight, CheckCircle2, Download, Share2, Pencil,
+  ShoppingCart, ShieldAlert, Clock, Bot, Lightbulb,
+  ArrowRight, ShieldCheck, PhoneCall, Star, Loader2,
+  FileText, CheckSquare, Landmark, Scale, Plus, Send, MessageSquare, Trash2
 } from "lucide-react";
+import { auth, db } from "@/lib/firebase";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { chatWithAiAction } from "@/actions/ai";
 
 export default function CaseAnalysisPage() {
   const router = useRouter();
-  const [analysis, setAnalysis] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [revealStep, setRevealStep] = useState(0);
-
+  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  
+  // Chat History State
+  const [chats, setChats] = useState<Record<string, unknown>[]>([]);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+  
+  // Active Chat State
+  const activeChat = chats.find(c => c.id === currentChatId) || null;
+  const [inputText, setInputText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  
+  // Smart Analysis Animation State
+  const [revealStep, setRevealStep] = useState(7); 
   const printRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // 1. Auth Listener
   useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (usr) => {
+      setUser(usr);
+    });
+    return () => unsub();
+  }, []);
+
+  const checkSessionStorageForNewAnalysis = async (userId: string) => {
     const data = sessionStorage.getItem("nyaya_ai_analysis");
     if (data) {
       try {
         const parsed = JSON.parse(data);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        setAnalysis(parsed);
+        sessionStorage.removeItem("nyaya_ai_analysis");
+        
+        const docRef = await addDoc(collection(db, `users/${userId}/ai_chats`), {
+          title: parsed.category || "Smart Analysis",
+          createdAt: serverTimestamp(),
+          analysisData: parsed,
+          isNewAnalysis: true,
+          messages: []
+        });
+        setCurrentChatId(docRef.id);
       } catch (e) {
         console.error("Failed to parse analysis data", e);
       }
     }
-    
-    // Simulate initial loading time for dramatic effect if data exists
-    if (data) {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
+  };
 
-  // Cascading reveal effect
+  // 2. Fetch Chat History
   useEffect(() => {
-    if (!isLoading && analysis) {
+    if (!user) return;
+    const q = query(collection(db, `users/${user.uid}/ai_chats`), orderBy("createdAt", "desc"));
+    const unsub = onSnapshot(q, (snapshot) => {
+      const chatList = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      setChats(chatList);
+      
+      if (!currentChatId && chatList.length === 0) {
+        checkSessionStorageForNewAnalysis(user.uid);
+      } else if (!currentChatId && chatList.length > 0) {
+        const stored = sessionStorage.getItem("nyaya_ai_analysis");
+        if(stored) {
+            checkSessionStorageForNewAnalysis(user.uid);
+        } else {
+            setCurrentChatId(chatList[0].id);
+        }
+      } else if (currentChatId && chatList.length > 0) {
+          const stored = sessionStorage.getItem("nyaya_ai_analysis");
+          if(stored) {
+              checkSessionStorageForNewAnalysis(user.uid);
+          }
+      }
+    }, (error) => {
+      console.error("Firestore error:", error);
+    });
+    return () => unsub();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); 
+
+  // 3. Animation Effect for New Analysis
+  useEffect(() => {
+    if (activeChat && activeChat.isNewAnalysis) {
+      setRevealStep(0);
       const timers = [
-        setTimeout(() => setRevealStep(1), 500),  // Category
-        setTimeout(() => setRevealStep(2), 1500), // Severity
-        setTimeout(() => setRevealStep(3), 2500), // Applicable Rights
-        setTimeout(() => setRevealStep(4), 3500), // Evidence Checklist
-        setTimeout(() => setRevealStep(5), 4500), // Recommended Authority
-        setTimeout(() => setRevealStep(6), 6000), // Complaint Draft
-        setTimeout(() => setRevealStep(7), 7500), // Next Steps
+        setTimeout(() => setRevealStep(1), 500),
+        setTimeout(() => setRevealStep(2), 1500),
+        setTimeout(() => setRevealStep(3), 2500),
+        setTimeout(() => setRevealStep(4), 3500),
+        setTimeout(() => setRevealStep(5), 4500),
+        setTimeout(() => setRevealStep(6), 6000),
+        setTimeout(() => setRevealStep(7), 7500),
       ];
       return () => timers.forEach(clearTimeout);
+    } else if (activeChat) {
+      setRevealStep(7);
     }
-  }, [isLoading, analysis]);
+  }, [activeChat?.id, activeChat?.isNewAnalysis]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [activeChat?.messages]);
+
+  const handleNewChat = async () => {
+    if (!user) return;
+    const docRef = await addDoc(collection(db, `users/${user.uid}/ai_chats`), {
+      title: "New Conversation",
+      createdAt: serverTimestamp(),
+      messages: []
+    });
+    setCurrentChatId(docRef.id);
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputText.trim() || !user || !currentChatId) return;
+    
+    // eslint-disable-next-line react-hooks/purity
+    const userMessage = { role: "user", content: inputText, timestamp: Date.now() };
+    setInputText("");
+    setIsSending(true);
+
+    try {
+      const chatRef = doc(db, `users/${user.uid}/ai_chats`, currentChatId);
+      
+      const updates: Record<string, unknown> = {
+        messages: arrayUnion(userMessage),
+        isNewAnalysis: false
+      };
+      
+      if (activeChat?.title === "New Conversation" && activeChat.messages?.length === 0) {
+         updates.title = inputText.substring(0, 30) + "...";
+      }
+      
+      await updateDoc(chatRef, updates);
+
+      // Call Real AI
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const history = ((activeChat?.messages as any[]) || []).map((m: any) => ({ role: m.role, content: m.content }));
+      
+      // If there is an analysisData, inject it as context
+      if (activeChat?.analysisData) {
+        history.unshift({ 
+          role: "user", 
+          content: `Here is the context of my legal issue: ${JSON.stringify(activeChat.analysisData)}` 
+        });
+      }
+      
+      history.push({ role: "user", content: inputText });
+      
+      const res = await chatWithAiAction(history);
+      
+      if (res.success && res.text) {
+        const aiMessage = { 
+          role: "ai", 
+          content: res.text,
+          // eslint-disable-next-line react-hooks/purity
+          timestamp: Date.now() 
+        };
+        await updateDoc(chatRef, {
+          messages: arrayUnion(aiMessage)
+        });
+      } else {
+        const aiMessage = { 
+          role: "ai", 
+          content: "Sorry, I am having trouble connecting to the AI network right now. Please try again later.",
+          // eslint-disable-next-line react-hooks/purity
+          timestamp: Date.now() 
+        };
+        await updateDoc(chatRef, {
+          messages: arrayUnion(aiMessage)
+        });
+      }
+      
+      setIsSending(false);
+
+    } catch (err) {
+      console.error(err);
+      setIsSending(false);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
   };
 
-  if (isLoading) {
+  const renderSmartAnalysis = (analysis: Record<string, unknown>) => {
+    if (!analysis) return null;
     return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <div className="w-16 h-16 relative flex items-center justify-center">
-          <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-brand-primary rounded-full border-t-transparent animate-spin"></div>
-          <Bot size={24} className="text-brand-primary absolute" />
-        </div>
-        <h2 className="text-xl font-bold text-text-main animate-pulse">NyayaAI is thinking...</h2>
-        <p className="text-text-muted text-sm">Analyzing laws, precedents, and evidence requirements.</p>
-      </main>
-    );
-  }
-
-  if (!analysis) {
-    return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="bg-white border border-border-main p-8 rounded-2xl shadow-sm text-center max-w-lg w-full">
-          <div className="w-16 h-16 bg-bg-subtle rounded-full flex items-center justify-center mx-auto mb-6 border border-border-main">
-            <Bot size={32} className="text-text-main" />
-          </div>
-          <h2 className="text-2xl font-bold text-text-main mb-2">AI Case Assistant</h2>
-          <p className="text-text-muted mb-8">Follow these steps to get a complete case analysis:</p>
-          
-          <div className="space-y-4 mb-8 text-left">
-            <div className="flex gap-4">
-              <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">1</div>
-              <p className="text-sm font-medium text-text-main mt-0.5">Please upload or paste the details of your legal issue</p>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">2</div>
-              <p className="text-sm font-medium text-text-main mt-0.5">Ensure all relevant documents are attached for a thorough analysis</p>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">3</div>
-              <p className="text-sm font-medium text-text-main mt-0.5">Specify the jurisdiction if known</p>
-            </div>
-          </div>
-
-          <button 
-            onClick={() => router.push("/dashboard/describe-issue")}
-            className="w-full bg-black text-white px-6 py-4 rounded-xl font-bold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-          >
-            Start New Analysis <ArrowRight size={18} />
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-6 print:py-0 print:px-0">
-      
-      {/* Hide breadcrumbs and header on print */}
-      <div className="print:hidden">
-        <div className="flex items-center gap-2 text-sm text-text-muted mb-4 font-semibold">
-          <span>Home</span>
-          <ChevronRight size={14} />
-          <span>AI Assistant</span>
-          <ChevronRight size={14} />
-          <span className="text-text-main">Case Analysis</span>
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-main pb-4 mb-6">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold text-text-main tracking-tight">Smart Analysis</h1>
-            {revealStep >= 7 && (
-              <div className="hidden sm:flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold border border-green-200 animate-in fade-in zoom-in duration-500">
-                <CheckCircle2 size={14} />
-                Analysis Complete
-              </div>
-            )}
-          </div>
-          
-          <div className={`flex items-center gap-3 transition-opacity duration-1000 ${revealStep >= 7 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-            <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-text-main text-white rounded-xl text-sm font-semibold hover:bg-black transition-colors shadow-sm">
-              <Download size={16} />
-              Download PDF
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Container - Hidden on Print */}
-      <div ref={printRef} className="grid lg:grid-cols-[1fr_320px] gap-8 items-start print:hidden">
-        
-        {/* Main Content (Left) */}
-        <div className="space-y-6">
-          
-          {/* Your Issue Card */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm print:shadow-none print:border-b">
-            <div className="flex items-start justify-between gap-4 mb-3">
-              <h3 className="font-bold text-text-main text-lg flex items-center gap-2">
-                <FileText size={20} className="text-brand-primary" />
-                Your Issue
-              </h3>
-              <button 
-                onClick={() => router.push("/dashboard/describe-issue")}
-                className="print:hidden flex items-center gap-2 px-3 py-1.5 bg-white border border-border-main rounded-xl text-xs font-bold text-text-main hover:bg-bg-subtle transition-colors shrink-0"
-              >
-                <Pencil size={12} />
-                Edit
-              </button>
-            </div>
+      <div className="space-y-6 mb-8 w-full max-w-4xl mx-auto print:max-w-full">
+         <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm print:shadow-none print:border-b">
+            <h3 className="font-bold text-text-main text-lg flex items-center gap-2 mb-3">
+              <FileText size={20} className="text-brand-primary" />
+              Your Issue
+            </h3>
             <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap">
               {analysis.originalIssue}
             </p>
           </div>
 
-          {/* Stats Grid - Step 1 & 2 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 print:grid-cols-2">
-            
-            {/* Case Category (Step 1) */}
             <div className={`bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col transition-all duration-700 ${revealStep >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-bg-subtle rounded-xl flex items-center justify-center">
@@ -199,7 +223,6 @@ export default function CaseAnalysisPage() {
               </div>
             </div>
 
-            {/* Severity (Step 2) */}
             <div className={`bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col transition-all duration-700 ${revealStep >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
@@ -215,7 +238,6 @@ export default function CaseAnalysisPage() {
             </div>
           </div>
 
-          {/* Applicable Rights (Step 3) */}
           {revealStep >= 3 && (
             <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:shadow-none print:border-b">
               <h3 className="font-bold text-text-main text-lg mb-4 flex items-center gap-2">
@@ -233,7 +255,6 @@ export default function CaseAnalysisPage() {
             </div>
           )}
 
-          {/* Evidence Checklist (Step 4) */}
           {revealStep >= 4 && (
             <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:shadow-none print:border-b">
               <h3 className="font-bold text-text-main text-lg mb-4 flex items-center gap-2">
@@ -247,172 +268,190 @@ export default function CaseAnalysisPage() {
                     <span className="text-sm font-medium text-text-main line-clamp-2">{item}</span>
                   </div>
                 ))}
-                {(!analysis.evidenceChecklist || analysis.evidenceChecklist.length === 0) && (
-                  <p className="text-sm text-text-muted">No specific evidence checklist generated.</p>
-                )}
               </div>
             </div>
           )}
 
-          {/* Recommended Authority (Step 5) */}
           {revealStep >= 5 && (
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:bg-none print:border-b print:shadow-none">
               <h3 className="font-bold text-text-main text-lg mb-2 flex items-center gap-2">
                 <Landmark size={20} className="text-blue-700" />
                 Recommended Authority
               </h3>
-              <p className="text-sm text-text-main mb-4">You should file your complaint with:</p>
               <div className="bg-white border border-blue-200 p-4 rounded-xl shadow-sm inline-block font-bold text-blue-900">
                 {analysis.recommendedAuthority || "Appropriate Legal Forum"}
               </div>
             </div>
           )}
 
-          {/* Complaint Draft (Step 6) */}
           {revealStep >= 6 && analysis.complaintDraft && (
             <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:shadow-none print:border-0 print:pt-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-text-main text-lg flex items-center gap-2">
-                  <FileText size={20} className="text-text-main" />
-                  Generated Complaint Draft
-                </h3>
-                <button className="print:hidden text-xs font-bold text-brand-primary hover:underline">Copy Text</button>
-              </div>
+              <h3 className="font-bold text-text-main text-lg flex items-center gap-2 mb-4">
+                <FileText size={20} className="text-text-main" />
+                Generated Complaint Draft
+              </h3>
               <div className="bg-bg-subtle/30 border border-border-main rounded-xl p-5 font-mono text-sm leading-relaxed whitespace-pre-wrap text-text-main max-h-[400px] overflow-y-auto print:max-h-none print:border-0 print:bg-transparent print:p-0">
                 {analysis.complaintDraft}
               </div>
             </div>
           )}
+      </div>
+    );
+  };
 
+  return (
+    <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 h-[calc(100vh-80px)] flex gap-6 overflow-hidden print:h-auto print:block">
+      
+      {/* Sidebar - History */}
+      <div className="w-64 shrink-0 flex flex-col bg-white border border-border-main rounded-3xl overflow-hidden print:hidden">
+        <div className="p-4 border-b border-border-main">
+          <button 
+            onClick={handleNewChat}
+            className="w-full flex items-center justify-center gap-2 bg-black text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition-colors"
+          >
+            <Plus size={18} />
+            New Chat
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4 px-2">Recent Chats</p>
+          {chats.length === 0 && (
+            <p className="text-sm text-text-muted px-2">No history yet.</p>
+          )}
+          {chats.map(chat => (
+            <button 
+              key={chat.id}
+              onClick={() => setCurrentChatId(chat.id)}
+              className={`w-full text-left flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                currentChatId === chat.id ? "bg-bg-subtle font-bold text-text-main" : "text-text-muted hover:bg-gray-50"
+              }`}
+            >
+              <MessageSquare size={16} className={currentChatId === chat.id ? "text-brand-primary shrink-0" : "shrink-0"} />
+              <span className="truncate text-sm flex-1">{chat.title}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col bg-white border border-border-main rounded-3xl overflow-hidden relative">
+        
+        {/* Header */}
+        <div className="p-5 border-b border-border-main flex items-center justify-between bg-white z-10 shrink-0 print:hidden">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 bg-bg-subtle rounded-full flex items-center justify-center">
+                <Bot size={20} className="text-text-main" />
+             </div>
+             <div>
+                <h2 className="font-bold text-text-main">NyayaAI Legal Assistant</h2>
+                <p className="text-xs text-text-muted">Powered by AI</p>
+             </div>
+          </div>
+          <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-text-main text-white rounded-xl text-sm font-bold hover:bg-black transition-colors">
+            <Download size={16} />
+            Export
+          </button>
         </div>
 
-        {/* Sidebar Content (Right) - Hidden on Print */}
-        <div className="space-y-6 print:hidden">
+        {/* Chat Messages */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 print:p-0" ref={printRef}>
           
-          {/* Next Steps (Step 7) */}
-          <div className={`bg-black rounded-2xl p-6 shadow-xl transition-all duration-1000 ${revealStep >= 7 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-              <Lightbulb size={18} className="text-yellow-400" />
-              Next Steps
-            </h3>
-            <div className="space-y-4 relative">
-              <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gray-800 z-0"></div>
-              {(analysis.nextSteps || ["Review analysis", "Gather documents", "File complaint"]).map((step: string, idx: number) => (
-                <div key={idx} className="flex gap-4 relative z-10">
-                  <div className="w-6 h-6 rounded-full bg-gray-800 text-white flex items-center justify-center text-xs font-bold shrink-0 border-2 border-black">
-                    {idx + 1}
+          {!activeChat ? (
+            <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto">
+              <div className="w-16 h-16 bg-bg-subtle rounded-2xl flex items-center justify-center mb-6 border border-border-main shadow-sm">
+                <Bot size={32} className="text-text-main" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">How can I help you?</h2>
+              <p className="text-text-muted mb-8 leading-relaxed">Start a new conversation or select a previous Smart Analysis to continue your legal journey.</p>
+              <button 
+                onClick={() => router.push("/dashboard/describe-issue")}
+                className="bg-black text-white px-6 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-800 transition-all shadow-md hover:scale-105"
+              >
+                Generate New Smart Analysis <ArrowRight size={18} />
+              </button>
+            </div>
+          ) : (
+            <>
+              {activeChat.analysisData && renderSmartAnalysis(activeChat.analysisData)}
+              
+              {((activeChat.messages as Record<string, unknown>[]) || []).map((msg: Record<string, unknown>, idx: number) => (
+                <div key={idx} className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"} print:flex-row print:mb-4`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 ${
+                    msg.role === "user" ? "bg-black text-white" : "bg-brand-primary text-white"
+                  }`}>
+                    {msg.role === "user" ? user?.displayName?.charAt(0) || "U" : <Bot size={16} />}
                   </div>
-                  <p className="text-sm text-gray-300 mt-0.5">{step}</p>
+                  <div className={`max-w-[80%] rounded-2xl p-4 text-sm leading-relaxed ${
+                    msg.role === "user" 
+                      ? "bg-black text-white rounded-tr-sm" 
+                      : "bg-bg-subtle text-text-main rounded-tl-sm border border-border-main"
+                  } print:bg-white print:border print:border-gray-300 print:text-black print:max-w-full`}>
+                    {msg.content}
+                  </div>
                 </div>
               ))}
-            </div>
-            <button 
-              onClick={handlePrint}
-              className="w-full mt-6 flex items-center justify-center gap-2 bg-white text-black py-3 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors"
-            >
-              <Download size={16} />
-              Save Case File (PDF)
-            </button>
-          </div>
-
-          {/* Urgent Help - Always visible early */}
-          <div className={`bg-white border border-border-main rounded-2xl p-6 shadow-sm transition-opacity duration-1000 ${revealStep >= 2 ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-bg-subtle flex items-center justify-center shrink-0">
-                <PhoneCall size={20} className="text-text-main" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm">Need Urgent Help?</h4>
-                <p className="text-[11px] text-text-muted mt-1 leading-relaxed">If this is an emergency or you feel threatened, contact authorities immediately.</p>
-              </div>
-            </div>
-            <a href="tel:112" className="w-full flex items-center justify-center gap-2 bg-red-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition-colors">
-              <PhoneCall size={16} />
-              Call 112 (National Emergency)
-            </a>
-            <a href="tel:1091" className="w-full flex items-center justify-center gap-2 bg-white text-text-main border border-border-main py-2.5 rounded-xl text-sm font-bold hover:bg-bg-subtle transition-colors mt-2">
-              <PhoneCall size={16} />
-              Women Helpline (1091)
-            </a>
-          </div>
+              
+              {isSending && (
+                <div className="flex gap-4 flex-row">
+                  <div className="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center shrink-0 mt-1">
+                    <Bot size={16} />
+                  </div>
+                  <div className="bg-bg-subtle text-text-main rounded-2xl rounded-tl-sm border border-border-main p-4 flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin text-brand-primary" />
+                    <span className="text-sm">Thinking...</span>
+                  </div>
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </>
+          )}
 
         </div>
+
+        {/* Chat Input */}
+        {activeChat && (
+          <div className="p-4 border-t border-border-main bg-white shrink-0 print:hidden">
+            <form onSubmit={handleSendMessage} className="relative max-w-4xl mx-auto">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Ask a follow-up question about your case..."
+                className="w-full bg-bg-subtle border border-border-main rounded-2xl pl-5 pr-14 py-4 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary text-sm shadow-sm"
+                disabled={isSending}
+              />
+              <button 
+                type="submit"
+                disabled={!inputText.trim() || isSending}
+                className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:opacity-50 transition-all"
+              >
+                <Send size={16} />
+              </button>
+            </form>
+            <p className="text-center text-[10px] text-text-light mt-3">
+              NyayaAI can make mistakes. Always verify with a legal professional.
+            </p>
+          </div>
+        )}
 
       </div>
 
-      {/* --- PROFESSIONAL PRINT LAYOUT (HIDDEN ON SCREEN) --- */}
+      {/* --- PROFESSIONAL PRINT LAYOUT --- */}
       <div className="hidden print:block font-serif text-black max-w-4xl mx-auto p-8 bg-white">
-        {/* Header */}
-        <div className="border-b-2 border-black pb-6 mb-8 flex justify-between items-end">
+         <div className="border-b-2 border-black pb-6 mb-8 flex justify-between items-end">
           <div>
             <h1 className="text-3xl font-black uppercase tracking-widest mb-1">NyayaAI</h1>
             <p className="text-sm font-semibold uppercase tracking-wider text-gray-600">Official Legal Analysis Report</p>
           </div>
           <div className="text-right text-sm text-gray-600">
             <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
-            <p><strong>Ref:</strong> NYA-{Math.random().toString(36).substring(2, 8).toUpperCase()}</p>
+            <p><strong>Ref:</strong> NYA-X7V2M9</p>
           </div>
         </div>
-
-        {/* Case Summary */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">1. Case Summary</h2>
-          <div className="bg-gray-50 p-4 rounded text-sm leading-relaxed border border-gray-200 whitespace-pre-wrap">
-            {analysis.originalIssue}
-          </div>
-        </div>
-
-        {/* Classification */}
-        <div className="grid grid-cols-2 gap-8 mb-8">
-          <div>
-            <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">2. Classification</h2>
-            <p className="text-sm mb-2"><strong className="text-gray-600">Category:</strong> {analysis.category || "General Dispute"}</p>
-            <p className="text-sm"><strong className="text-gray-600">Severity:</strong> {analysis.severity || "Medium"}</p>
-          </div>
-          <div>
-            <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">3. Recommended Forum</h2>
-            <p className="text-sm font-bold text-black">{analysis.recommendedAuthority || "Appropriate Legal Forum"}</p>
-          </div>
-        </div>
-
-        {/* Rights & Evidence */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">4. Applicable Rights & Laws</h2>
-          <ul className="list-disc pl-5 text-sm space-y-2">
-            {(analysis.applicableRights || analysis.implications || []).map((right: string, idx: number) => (
-              <li key={idx}>{right}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mb-8">
-          <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">5. Required Evidence</h2>
-          <ul className="list-disc pl-5 text-sm space-y-2">
-            {(analysis.evidenceChecklist || []).map((item: string, idx: number) => (
-              <li key={idx}>{item}</li>
-            ))}
-            {(!analysis.evidenceChecklist || analysis.evidenceChecklist.length === 0) && (
-              <p className="text-sm text-gray-500 italic">No specific evidence listed.</p>
-            )}
-          </ul>
-        </div>
-
-        {/* Complaint Draft */}
-        {analysis.complaintDraft && (
-          <div className="mb-8 break-inside-avoid">
-            <h2 className="text-lg font-bold uppercase border-b border-gray-300 pb-2 mb-4">6. Official Complaint Draft</h2>
-            <div className="border border-gray-300 p-6 text-sm font-serif leading-loose whitespace-pre-wrap">
-              {analysis.complaintDraft}
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-gray-300 text-xs text-center text-gray-500">
-          <p className="font-bold mb-1">Disclaimer</p>
-          <p>This document is generated by NyayaAI for informational purposes and does not constitute formal legal advice. Please consult with a qualified legal professional before taking legal action.</p>
-        </div>
+        {/* Note: The Smart Analysis + Chat Messages are rendered in the main flow and will be printed because of `ref={printRef}`. */}
       </div>
+
     </main>
   );
 }

@@ -83,9 +83,9 @@ export default function Navbar() {
         })}
       </div>
 
-      <div className="hidden md:flex items-center gap-4">
-        {/* Language Switcher */}
-        <div className="relative">
+      <div className="flex items-center gap-3 md:gap-4">
+        {/* Language Switcher - Desktop Only */}
+        <div className="hidden md:block relative">
           <button 
             onClick={() => setLangOpen(!langOpen)}
             className="flex items-center gap-1 text-sm font-medium hover:bg-bg-subtle px-3 py-2 rounded-lg transition-colors"
@@ -112,10 +112,10 @@ export default function Navbar() {
           )}
         </div>
 
-        <Link href="/login" className="px-5 py-2 text-sm font-medium border border-border-main rounded-xl hover:bg-bg-subtle transition-all shadow-sm">
+        <Link href="/login" className="px-4 py-2 md:px-5 md:py-2 text-xs md:text-sm font-medium border border-border-main rounded-xl hover:bg-bg-subtle transition-all shadow-sm">
           {t("login")}
         </Link>
-        <Link href="/signup" className="px-5 py-2 text-sm font-medium bg-brand-primary text-white rounded-xl hover:bg-brand-primary/90 transition-all shadow-md shadow-brand-primary/20">
+        <Link href="/signup" className="hidden md:flex px-5 py-2 text-sm font-medium bg-brand-primary text-white rounded-xl hover:bg-brand-primary/90 transition-all shadow-md shadow-brand-primary/20">
           {t("getStarted")}
         </Link>
       </div>

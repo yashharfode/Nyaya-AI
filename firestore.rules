@@ -11,6 +11,11 @@ service cloud.firestore {
     match /users/{userId} {
       // A user can read, create, and update their own profile document
       allow read, write: if isSignedIn() && request.auth.uid == userId;
+      
+      // Match the ai_chats subcollection
+      match /ai_chats/{chatId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
     }
 
     // Match the cases collection
