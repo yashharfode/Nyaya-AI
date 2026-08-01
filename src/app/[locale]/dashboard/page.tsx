@@ -15,6 +15,7 @@ import {
   Scale
 } from "lucide-react";
 import { getSession } from "@/actions/auth";
+import DashboardChatInput from "@/components/DashboardChatInput";
 
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
@@ -36,19 +37,7 @@ export default async function DashboardPage() {
             <p className="text-text-muted">{t("helpPrompt")}</p>
           </div>
 
-          <div className="bg-white border border-border-main rounded-2xl p-2 shadow-sm focus-within:ring-2 focus-within:ring-brand-primary/20 focus-within:border-brand-primary transition-all">
-            <div className="flex gap-2">
-              <input 
-                type="text" 
-                className="flex-1 bg-transparent border-none focus:ring-0 text-text-main placeholder:text-text-light px-4 py-3"
-                placeholder={t("searchPlaceholder")}
-              />
-              <button className="bg-text-main text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 hover:bg-black transition-colors shrink-0">
-                <Send size={16} />
-                {t("startChat")}
-              </button>
-            </div>
-          </div>
+          <DashboardChatInput />
 
           <div className="space-y-3">
             <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">{t("examplesTitle")}</p>
