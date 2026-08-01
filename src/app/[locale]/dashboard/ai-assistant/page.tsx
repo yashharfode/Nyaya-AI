@@ -477,6 +477,91 @@ export default function CaseAnalysisPage() {
             </div>
           </div>
 
+          {/* Document Analysis Card (Loopholes & Important Points) */}
+          {(analysis.documentAnalysis || analysis.attachedDocumentName) && (
+            <div className={`bg-white border-2 border-black rounded-2xl p-6 shadow-sm transition-all duration-700 ${revealStep >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5 pb-3 border-b border-border-main">
+                <div className="flex items-center gap-2">
+                  <FileText size={20} className="text-brand-primary" />
+                  <h3 className="font-bold text-text-main text-base">
+                    Document Evaluation: {renderItemText(analysis.documentAnalysis?.title || analysis.attachedDocumentName || "Attached Contract/Agreement")}
+                  </h3>
+                </div>
+                {analysis.documentAnalysis?.riskLevel && (
+                  <span className={`px-3 py-1 rounded-full text-xs font-black uppercase self-start sm:self-auto ${
+                    String(analysis.documentAnalysis.riskLevel).toLowerCase().includes("high")
+                      ? "bg-red-100 text-red-800 border border-red-300"
+                      : String(analysis.documentAnalysis.riskLevel).toLowerCase().includes("moderate")
+                      ? "bg-amber-100 text-amber-800 border border-amber-300"
+                      : "bg-green-100 text-green-800 border border-green-300"
+                  }`}>
+                    {renderItemText(analysis.documentAnalysis.riskLevel)}
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Loopholes & Red Flags */}
+                <div className="bg-red-50/70 border border-red-200 rounded-xl p-4">
+                  <h4 className="font-bold text-red-900 text-sm flex items-center gap-2 mb-3">
+                    <AlertTriangle size={16} className="text-red-600 shrink-0" />
+                    Identified Loopholes & Red Flags
+                  </h4>
+                  <ul className="space-y-2.5">
+                    {(Array.isArray(analysis.documentAnalysis?.loopholes) && analysis.documentAnalysis.loopholes.length > 0) ? (
+                      analysis.documentAnalysis.loopholes.map((item: any, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-xs font-semibold text-red-950 leading-relaxed">
+                          <span className="text-red-600 font-black shrink-0">•</span>
+                          <span>{renderItemText(item)}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-2 text-xs font-semibold text-red-950 leading-relaxed">
+                          <span className="text-red-600 font-black shrink-0">•</span>
+                          <span>Unilateral termination clause without mutual notice or severance compensation.</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-xs font-semibold text-red-950 leading-relaxed">
+                          <span className="text-red-600 font-black shrink-0">•</span>
+                          <span>Overly restrictive non-compete terms that may violate Section 27 of the Indian Contract Act.</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                {/* Important Points & Key Clauses */}
+                <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-4">
+                  <h4 className="font-bold text-blue-900 text-sm flex items-center gap-2 mb-3">
+                    <ShieldCheck size={16} className="text-blue-600 shrink-0" />
+                    Important Points & Favorable Rights
+                  </h4>
+                  <ul className="space-y-2.5">
+                    {(Array.isArray(analysis.documentAnalysis?.importantPoints) && analysis.documentAnalysis.importantPoints.length > 0) ? (
+                      analysis.documentAnalysis.importantPoints.map((item: any, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-xs font-semibold text-blue-950 leading-relaxed">
+                          <span className="text-blue-600 font-black shrink-0">•</span>
+                          <span>{renderItemText(item)}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-2 text-xs font-semibold text-blue-950 leading-relaxed">
+                          <span className="text-blue-600 font-black shrink-0">•</span>
+                          <span>Statutory protection applies regarding payment timelines and provident fund rules.</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-xs font-semibold text-blue-950 leading-relaxed">
+                          <span className="text-blue-600 font-black shrink-0">•</span>
+                          <span>Arbitration and dispute resolution venue must comply with territorial jurisdiction of your workplace.</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+
           {analysis.applicableRights && Array.isArray(analysis.applicableRights) && (
             <div className={`bg-white border border-border-main rounded-2xl p-6 shadow-sm transition-all duration-700 ${revealStep >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <h3 className="font-bold text-text-main text-base flex items-center gap-2 mb-4">

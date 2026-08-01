@@ -24,7 +24,19 @@ export async function analyzeLegalIssueAction(
       "nextSteps": ["String (Step 1)", "String (Step 2)"],
       "resolutionTime": "String (e.g. 30 - 60 Days)",
       "summary": "String (A 2-3 sentence summary of their issue based on laws)",
-      "implications": ["String (Bullet point 1)", "String (Bullet point 2)"]
+      "implications": ["String (Bullet point 1)", "String (Bullet point 2)"],
+      "documentAnalysis": {
+        "title": "String (Document Title or Type analyzed, e.g. Job Offer Agreement / Lease Contract, or null if no document provided)",
+        "riskLevel": "String (Low Risk, Moderate Risk, or High Risk)",
+        "loopholes": [
+          "String (Loophole, illegal clause, or red flag 1 with legal explanation)",
+          "String (Loophole, illegal clause, or red flag 2 with legal explanation)"
+        ],
+        "importantPoints": [
+          "String (Important legal clause, right, or favorable point 1)",
+          "String (Important legal clause, right, or favorable point 2)"
+        ]
+      }
     }`;
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
