@@ -38,9 +38,9 @@ export default function DocumentsPage() {
         </button>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-start">
+      <div className="space-y-8">
         
-        {/* Main Content (Left) */}
+        {/* Main Content (Table Area) */}
         <div className="space-y-6">
           
           {/* Filters (Tabs) */}
@@ -336,52 +336,57 @@ export default function DocumentsPage() {
 
         </div>
 
-        {/* Sidebar Content (Right) */}
-        <div className="space-y-6">
+        {/* Bottom Section: 3-Column Grid (Storage Usage, Quick Actions, Tips) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
           
           {/* Storage Usage Card */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm flex flex-col items-center text-center">
-            <h3 className="font-bold text-sm text-text-main self-start mb-6">Storage Usage</h3>
-            
-            {/* Circular Progress (24%) */}
-            <div className="relative w-32 h-32 flex items-center justify-center rounded-full mb-6">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                {/* Background Circle */}
-                <path
-                  className="text-gray-100"
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3.5"
-                />
-                {/* Progress Circle (24%) */}
-                <path
-                  className="text-black"
-                  strokeDasharray="24, 100"
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center flex-col">
-                <span className="text-xl font-black">2.4 GB</span>
-                <span className="text-[10px] text-text-muted mt-1 font-semibold">of 10 GB used</span>
-              </div>
-            </div>
+          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-sm text-text-main mb-6">Storage Usage</h3>
+              
+              <div className="flex items-center gap-6 mb-6">
+                {/* Circular Progress (24%) */}
+                <div className="relative w-24 h-24 flex items-center justify-center rounded-full shrink-0">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                    {/* Background Circle */}
+                    <path
+                      className="text-gray-100"
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                    />
+                    {/* Progress Circle (24%) */}
+                    <path
+                      className="text-black"
+                      strokeDasharray="24, 100"
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <span className="text-base font-black">2.4 GB</span>
+                    <span className="text-[9px] text-text-muted mt-0.5 font-semibold">of 10 GB</span>
+                  </div>
+                </div>
 
-            <div className="w-full space-y-2 mb-6">
-              <div className="flex justify-between text-[10px] font-bold text-text-main">
-                <span></span>
-                <span>24% Used</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-black rounded-full" style={{ width: "24%" }}></div>
+                <div className="w-full space-y-2">
+                  <div className="flex justify-between text-[11px] font-bold text-text-main">
+                    <span>Used Space</span>
+                    <span>24%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-black rounded-full" style={{ width: "24%" }}></div>
+                  </div>
+                  <p className="text-[10px] text-text-muted font-medium">7.6 GB remaining</p>
+                </div>
               </div>
             </div>
 
@@ -391,54 +396,56 @@ export default function DocumentsPage() {
           </div>
 
           {/* Quick Actions Card */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-sm text-text-main mb-4">Quick Actions</h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-start gap-3 cursor-pointer group">
-                <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                  <Upload size={12} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">Upload Document</h4>
-                  <p className="text-[10px] text-text-muted mt-0.5">Add files from your device</p>
-                </div>
-              </div>
+          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-sm text-text-main mb-4">Quick Actions</h3>
               
-              <div className="flex items-start gap-3 cursor-pointer group">
-                <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                  <Sparkles size={12} strokeWidth={2.5} />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-bg-subtle transition-colors cursor-pointer group">
+                  <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                    <Upload size={12} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">Upload Document</h4>
+                    <p className="text-[10px] text-text-muted mt-0.5">Add from device</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">AI Generate Document</h4>
-                  <p className="text-[10px] text-text-muted mt-0.5">Generate legal documents</p>
+                
+                <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-bg-subtle transition-colors cursor-pointer group">
+                  <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                    <Sparkles size={12} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">AI Generate Document</h4>
+                    <p className="text-[10px] text-text-muted mt-0.5">Generate legal docs</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-start gap-3 cursor-pointer group">
-                <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                  <Scan size={12} strokeWidth={2.5} />
+                <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-bg-subtle transition-colors cursor-pointer group">
+                  <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                    <Scan size={12} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">Scan Document</h4>
+                    <p className="text-[10px] text-text-muted mt-0.5">Scan using camera</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">Scan Document</h4>
-                  <p className="text-[10px] text-text-muted mt-0.5">Scan using your camera</p>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-3 cursor-pointer group">
-                <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                  <FolderPlus size={12} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">Create Folder</h4>
-                  <p className="text-[10px] text-text-muted mt-0.5">Organize your documents</p>
+                <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-bg-subtle transition-colors cursor-pointer group">
+                  <div className="mt-0.5 w-6 h-6 rounded-md border border-border-main flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                    <FolderPlus size={12} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-text-main group-hover:text-black transition-colors">Create Folder</h4>
+                    <p className="text-[10px] text-text-muted mt-0.5">Organize documents</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Tips Card */}
-          <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-6 shadow-sm relative overflow-hidden">
+          <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-6 shadow-sm relative overflow-hidden flex flex-col justify-between">
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb size={20} className="text-text-main" />
@@ -446,15 +453,15 @@ export default function DocumentsPage() {
               </div>
               <ul className="space-y-3 text-[11px] text-text-main font-semibold">
                 <li className="flex items-start gap-2">
-                  <Check size={14} className="mt-0.5 shrink-0" />
+                  <Check size={14} className="mt-0.5 shrink-0 text-green-600" />
                   <span className="leading-relaxed">Upload clear and readable documents.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Check size={14} className="mt-0.5 shrink-0" />
+                  <Check size={14} className="mt-0.5 shrink-0 text-green-600" />
                   <span className="leading-relaxed">PDF format works best for analysis.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Check size={14} className="mt-0.5 shrink-0" />
+                  <Check size={14} className="mt-0.5 shrink-0 text-green-600" />
                   <span className="leading-relaxed">Keep your documents organized by using folders.</span>
                 </li>
               </ul>

@@ -18,7 +18,8 @@ import {
   Calendar,
   ArrowRight,
   Scale,
-  Loader2
+  Loader2,
+  Share2
 } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { auth, db } from "@/lib/firebase";
@@ -77,6 +78,26 @@ export default function MyCasesPage() {
     if (c.includes("work") || c.includes("employment")) return "bg-green-50 border-green-100";
     if (c.includes("consumer") || c.includes("product")) return "bg-orange-50 border-orange-100";
     return "bg-indigo-50 border-indigo-100";
+  };
+
+  const handleShareCaseWhatsApp = (e: React.MouseEvent, caseItem: any) => {
+    e.stopPropagation();
+    const title = typeof caseItem.originalIssue === "string" ? caseItem.originalIssue : (caseItem.originalIssue?.explanation || caseItem.category || "Legal Case");
+    const category = caseItem.category || "General Dispute";
+    const severity = caseItem.severity || "Medium";
+    const status = caseItem.status || "Analyzed";
+    const authority = caseItem.recommendedAuthority || "Appropriate Legal Forum";
+
+    const text = `*⚖ NyayaAI Case Summary*\n\n` +
+      `*Case:* ${title}\n` +
+      `*Category:* ${category}\n` +
+      `*Severity:* ${severity}\n` +
+      `*Status:* ${status}\n` +
+      `*Recommended Forum:* ${authority}\n\n` +
+      `_Shared via NyayaAI - AI Legal Operating System_`;
+
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
   };
 
   return (
@@ -169,6 +190,14 @@ export default function MyCasesPage() {
                         </span>
                       </div>
                       <div className="text-right flex items-center gap-3">
+                        <button
+                          onClick={(e) => handleShareCaseWhatsApp(e, caseItem)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-xs font-bold hover:bg-[#1ebd5b] transition-colors shadow-sm"
+                          title="Share case via WhatsApp"
+                        >
+                          <Share2 size={13} />
+                          WhatsApp
+                        </button>
                         <ChevronRight size={18} className="text-text-light" />
                       </div>
                     </div>

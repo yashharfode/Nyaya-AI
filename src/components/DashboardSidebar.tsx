@@ -17,7 +17,9 @@ import {
   Headphones,
   ArrowRight,
   X,
-  GraduationCap
+  GraduationCap,
+  Newspaper,
+  Briefcase
 } from "lucide-react";
 import { useSidebar } from "@/components/SidebarContext";
 
@@ -33,8 +35,10 @@ export default function DashboardSidebar() {
     { name: "Documents", href: "/dashboard/documents", icon: <FileText size={20} /> },
     { name: "Evidence Checklist", href: "/dashboard/evidence", icon: <CheckSquare size={20} /> },
     { name: "Government Navigator", href: "/dashboard/navigator", icon: <Landmark size={20} /> },
+    { name: "Legal Services & Costs", href: "/dashboard/services", icon: <Briefcase size={20} /> },
     { name: "Resources", href: "/dashboard/resources", icon: <BookOpen size={20} /> },
     { name: "Know Your Rights", href: "/dashboard/rights", icon: <ShieldCheck size={20} /> },
+    { name: "Legal News & Courts", href: "/dashboard/news", icon: <Newspaper size={20} /> },
     { name: "Legal Academy", href: "/dashboard/academy", icon: <GraduationCap size={20} /> },
     { name: "Settings", href: "/dashboard/settings", icon: <Settings size={20} /> },
   ];
