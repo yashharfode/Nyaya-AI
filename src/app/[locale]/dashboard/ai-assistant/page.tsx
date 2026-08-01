@@ -12,7 +12,7 @@ import {
 import { auth, db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc, arrayUnion } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { chatWithAiAction } from "@/actions/ai";
+import { chatWithAiAction, correctSpeechSpellingAction } from "@/actions/ai";
 import { useVoiceRecording } from "@/hooks/useVoiceRecording";
 
 function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }) {
@@ -269,15 +269,49 @@ export default function CaseAnalysisPage() {
   const activeChat = chats.find(c => c.id === currentChatId) || null;
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [voiceLang, setVoiceLang] = useState<"en-IN" | "hi-IN">("en-IN");
+  const [isPolishingSpelling, setIsPolishingSpelling] = useState(false);
+  const [autoCorrectSpelling, setAutoCorrectSpelling] = useState(true);
+
   const {
     isRecording: isVoiceRecording,
     interimText: voiceInterim,
     toggleRecording: toggleVoice,
   } = useVoiceRecording({
-    onTranscript: (chunk) => {
-      setInputText((prev) => (prev ? prev.trim() + " " : "") + chunk);
+    lang: voiceLang,
+    onTranscript: async (chunk) => {
+      const updatedText = (inputText ? inputText.trim() + " " : "") + chunk;
+      setInputText(updatedText);
+      if (autoCorrectSpelling && updatedText.trim().length > 3) {
+        setIsPolishingSpelling(true);
+        try {
+          const res = await correctSpeechSpellingAction(updatedText);
+          if (res.success && res.text) {
+            setInputText(res.text);
+          }
+        } catch (e) {
+          // fallback to raw speech
+        } finally {
+          setIsPolishingSpelling(false);
+        }
+      }
     },
   });
+
+  const handleCorrectSpelling = async () => {
+    if (!inputText.trim() || isPolishingSpelling) return;
+    setIsPolishingSpelling(true);
+    try {
+      const res = await correctSpeechSpellingAction(inputText);
+      if (res.success && res.text) {
+        setInputText(res.text);
+      }
+    } catch (err) {
+      console.error("Spelling polish error:", err);
+    } finally {
+      setIsPolishingSpelling(false);
+    }
+  };
   
   // OpenRouter Model & Reasoning State
   const [selectedModel, setSelectedModel] = useState<string>("inclusionai/ling-3.0-flash:free");
@@ -1020,14 +1054,38 @@ export default function CaseAnalysisPage() {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={`Ask a legal question (Reasoning: ${enableReasoning ? "ON" : "OFF"} • ${selectedModel.split("/")[1]?.replace(":free", "")})...`}
-                className="w-full bg-white border-2 border-black/80 rounded-2xl pl-5 pr-24 py-4 focus:outline-none focus:ring-4 focus:ring-black/10 focus:border-black text-sm font-semibold text-text-main placeholder:text-text-light shadow-sm transition-all"
+                className="w-full bg-white border-2 border-black/80 rounded-2xl pl-5 pr-44 sm:pr-56 py-4 focus:outline-none focus:ring-4 focus:ring-black/10 focus:border-black text-sm font-semibold text-text-main placeholder:text-text-light shadow-sm transition-all"
                 disabled={isSending}
               />
+              {inputText.trim() && (
+                <button
+                  type="button"
+                  onClick={handleCorrectSpelling}
+                  disabled={isPolishingSpelling || isSending}
+                  className="absolute right-28 sm:right-32 top-2 bottom-2 px-2.5 flex items-center gap-1 bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-primary border border-brand-primary/20 rounded-xl text-[10px] sm:text-xs font-extrabold transition-all shadow-sm shrink-0"
+                  title="Correct spelling for English and Hinglish speech"
+                >
+                  {isPolishingSpelling ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <span className="text-sm">✨</span>
+                  )}
+                  <span className="hidden sm:inline">Correct Spelling</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setVoiceLang(prev => prev === "en-IN" ? "hi-IN" : "en-IN")}
+                className="absolute right-14 sm:right-16 top-2 bottom-2 px-2 flex items-center justify-center bg-bg-subtle hover:bg-gray-200 border border-border-main rounded-xl text-[10px] font-black tracking-tight text-text-main transition-all shadow-sm shrink-0"
+                title="Switch voice recognition between English/Hinglish and Hindi"
+              >
+                {voiceLang === "en-IN" ? "EN/Hinglish" : "हिंदी"}
+              </button>
               <button
                 type="button"
                 onClick={toggleVoice}
                 disabled={isSending}
-                className={`absolute right-14 top-2 bottom-2 aspect-square flex items-center justify-center rounded-xl transition-all shadow-sm ${
+                className={`absolute right-12 sm:right-14 top-2 bottom-2 aspect-square flex items-center justify-center rounded-xl transition-all shadow-sm ${
                   isVoiceRecording
                     ? "bg-red-600 text-white animate-pulse"
                     : "bg-bg-subtle text-text-main hover:bg-gray-200 border border-border-main"
@@ -1049,6 +1107,18 @@ export default function CaseAnalysisPage() {
               <span>Model: <strong className="text-black font-extrabold">{selectedModel.split("/")[1]?.replace(":free", "") || "ling-3.0-flash"}</strong></span>
               <span>•</span>
               <span>Reasoning: <strong className={enableReasoning ? "text-green-700 font-extrabold" : "text-text-main"}>{enableReasoning ? "Enabled" : "Disabled"}</strong></span>
+              <span>•</span>
+              <button
+                type="button"
+                onClick={() => setAutoCorrectSpelling(prev => !prev)}
+                className="flex items-center gap-1 hover:text-black transition-colors"
+                title="Toggle automatic spelling correction for spoken Hinglish & English"
+              >
+                <span>Voice Auto Spell-Check:</span>
+                <strong className={autoCorrectSpelling ? "text-brand-primary font-extrabold" : "text-text-light"}>
+                  {autoCorrectSpelling ? "ON (EN/Hinglish)" : "OFF"}
+                </strong>
+              </button>
               <span>•</span>
               <span className="text-text-light">NyayaAI can make mistakes. Verify with an advocate.</span>
             </div>
