@@ -22,6 +22,9 @@ import {
 } from "lucide-react";
 import { analyzeLegalIssueAction } from "@/actions/ai";
 
+import { auth, db } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
 export default function DescribeIssuePage() {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,11 +37,28 @@ export default function DescribeIssuePage() {
     try {
       const res = await analyzeLegalIssueAction(text);
       if (res.success && res.data) {
-        // Save the AI response and original text to sessionStorage
-        sessionStorage.setItem("nyaya_ai_analysis", JSON.stringify({
+        
+        const payload = {
           originalIssue: text,
           ...res.data
-        }));
+        };
+
+        // If user is logged in, save to Firestore
+        if (auth.currentUser) {
+          try {
+            await addDoc(collection(db, "cases"), {
+              ...payload,
+              userId: auth.currentUser.uid,
+              createdAt: serverTimestamp(),
+              status: "Analyzed"
+            });
+          } catch (e) {
+            console.error("Failed to save case to Firestore:", e);
+          }
+        }
+
+        // Save the AI response and original text to sessionStorage for immediate UI
+        sessionStorage.setItem("nyaya_ai_analysis", JSON.stringify(payload));
         // Navigate to the case analysis page
         router.push("/dashboard/ai-assistant");
       } else {
