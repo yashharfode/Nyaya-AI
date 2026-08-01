@@ -324,10 +324,14 @@ export default function DescribeIssuePage() {
                 <p className="text-[11px] text-text-muted mt-1 leading-relaxed">Contact the relevant authorities immediately if it's an emergency.</p>
               </div>
             </div>
-            <button className="w-full flex items-center justify-center gap-2 bg-black text-white py-2.5 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors">
+            <a href="tel:112" className="w-full flex items-center justify-center gap-2 bg-red-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition-colors">
               <PhoneCall size={16} />
-              Emergency Contacts
-            </button>
+              Call 112 (National Emergency)
+            </a>
+            <a href="tel:1091" className="w-full flex items-center justify-center gap-2 bg-white text-text-main border border-border-main py-2.5 rounded-xl text-sm font-bold hover:bg-bg-subtle transition-colors mt-2">
+              <PhoneCall size={16} />
+              Women Helpline (1091)
+            </a>
           </div>
 
         </div>
