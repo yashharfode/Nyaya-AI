@@ -26,7 +26,7 @@ export default function MyCasesPage() {
   const router = useRouter();
 
   return (
-    <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8 space-y-6">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-6">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
@@ -101,8 +101,8 @@ export default function MyCasesPage() {
               </div>
 
               {/* Timeline Indicator inside Case 1 */}
-              <div className="mt-6 pt-5 border-t border-border-main">
-                <div className="flex items-center justify-between relative px-2">
+              <div className="mt-6 pt-5 border-t border-border-main overflow-x-auto scrollbar-hide pb-2">
+                <div className="flex items-center justify-between relative px-2 min-w-[500px]">
                   {/* Background Line */}
                   <div className="absolute left-6 right-6 top-3 h-0.5 bg-gray-200 z-0"></div>
                   {/* Progress Line */}

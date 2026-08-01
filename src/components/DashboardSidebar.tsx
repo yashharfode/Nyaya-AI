@@ -15,11 +15,14 @@ import {
   ShieldCheck, 
   Settings,
   Headphones,
-  ArrowRight
+  ArrowRight,
+  X
 } from "lucide-react";
+import { useSidebar } from "@/components/SidebarContext";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
+  const { isOpen, setIsOpen } = useSidebar();
 
   const navLinks = [
     { name: "Home", href: "/dashboard", icon: <Home size={20} /> },
@@ -35,20 +38,39 @@ export default function DashboardSidebar() {
   ];
 
   return (
-    <aside className="w-[280px] h-screen bg-bg-main border-r border-border-main flex flex-col fixed left-0 top-0 z-40 hidden lg:flex">
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
       
-      {/* Logo Area */}
-      <div className="h-20 flex items-center px-6">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="bg-black text-white p-2 rounded-xl group-hover:bg-gray-800 transition-colors">
-            <Scale size={24} strokeWidth={2.5} />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-lg text-text-main leading-tight">NyayaAI</span>
-            <span className="text-[9px] text-text-muted leading-tight">From Legal Confusion to Legal Action.</span>
-          </div>
-        </Link>
-      </div>
+      <aside 
+        className={`w-[280px] h-screen bg-bg-main border-r border-border-main flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 lg:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        
+        {/* Logo Area */}
+        <div className="h-20 flex items-center justify-between px-6 border-b border-transparent lg:border-none">
+          <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
+            <div className="bg-black text-white p-2 rounded-xl group-hover:bg-gray-800 transition-colors">
+              <Scale size={24} strokeWidth={2.5} />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-lg text-text-main leading-tight">NyayaAI</span>
+              <span className="text-[9px] text-text-muted leading-tight">From Legal Confusion to Legal Action.</span>
+            </div>
+          </Link>
+          <button 
+            className="lg:hidden p-2 text-text-muted hover:bg-bg-subtle rounded-xl"
+            onClick={() => setIsOpen(false)}
+          >
+            <X size={20} />
+          </button>
+        </div>
 
       {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
@@ -58,6 +80,7 @@ export default function DashboardSidebar() {
             <Link
               key={link.href}
               href={link.href}
+              onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
                 isActive 
                   ? "bg-black text-white shadow-md" 
@@ -108,6 +131,7 @@ export default function DashboardSidebar() {
           </button>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

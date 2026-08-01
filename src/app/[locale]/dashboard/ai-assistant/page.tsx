@@ -39,7 +39,7 @@ export default function CaseAnalysisPage() {
 
   if (isLoading) {
     return (
-      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8 flex items-center justify-center min-h-[60vh]">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex items-center justify-center min-h-[60vh]">
         <Loader2 className="animate-spin text-text-light w-8 h-8" />
       </main>
     );
@@ -47,7 +47,7 @@ export default function CaseAnalysisPage() {
 
   if (!analysis) {
     return (
-      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <h2 className="text-2xl font-bold text-text-main">No analysis found</h2>
         <p className="text-text-muted">Please describe your issue first to get a case analysis.</p>
         <button 
@@ -61,7 +61,7 @@ export default function CaseAnalysisPage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8 space-y-6">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-6">
       
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-text-muted mb-4 font-semibold">

@@ -23,7 +23,7 @@ export default async function DashboardPage() {
   const userName = session?.name ? session.name.split(" ")[0] : "User";
 
   return (
-    <main className="max-w-7xl mx-auto px-6 md:px-12 py-8 space-y-8 font-sans selection:bg-brand-accent selection:text-white">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 lg:space-y-8 font-sans selection:bg-brand-accent selection:text-white">
       
       {/* Top Section */}
       <div className="grid lg:grid-cols-3 gap-8">

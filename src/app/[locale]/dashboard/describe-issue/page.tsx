@@ -53,7 +53,7 @@ export default function DescribeIssuePage() {
   };
 
   return (
-    <main className="max-w-6xl mx-auto px-6 lg:px-10 py-8 space-y-6">
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-6">
       
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-text-muted mb-4 font-semibold">

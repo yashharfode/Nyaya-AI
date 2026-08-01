@@ -3,12 +3,14 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
-import { Bell, Search, LogOut } from "lucide-react";
+import { Bell, Search, LogOut, Menu } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
+import { useSidebar } from "@/components/SidebarContext";
 
 export default function DashboardNavbar({ user }: { user?: { name: string; email: string } | null }) {
   const t = useTranslations("Dashboard");
   const router = useRouter();
+  const { toggle } = useSidebar();
 
   const handleLogout = async () => {
     await logoutAction();
@@ -16,15 +18,22 @@ export default function DashboardNavbar({ user }: { user?: { name: string; email
   };
 
   return (
-    <nav className="sticky top-0 z-30 w-full bg-bg-main border-b border-border-main flex items-center justify-between h-20 px-6 lg:px-10">
+    <nav className="sticky top-0 z-30 w-full bg-bg-main border-b border-border-main flex items-center justify-between h-20 px-4 sm:px-6 lg:px-10">
       
-      {/* Left Side: Search Bar */}
-      <div className="flex-1 max-w-xl">
+      {/* Left Side: Mobile Menu & Search Bar */}
+      <div className="flex-1 max-w-xl flex items-center gap-2">
+        <button 
+          onClick={toggle}
+          className="lg:hidden p-2 text-text-main hover:bg-bg-subtle rounded-xl transition-colors"
+          aria-label="Toggle Menu"
+        >
+          <Menu size={24} />
+        </button>
         <div className="relative flex items-center w-full">
           <Search size={18} className="absolute left-4 text-text-light" />
           <input 
             type="text" 
-            placeholder="Search for laws, rights, cases..." 
+            placeholder="Search..." 
             className="w-full pl-11 pr-4 py-2.5 bg-white border border-border-main rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all text-sm"
           />
         </div>
