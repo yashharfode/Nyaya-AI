@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { 
   Sparkles, 
@@ -43,14 +44,14 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button className="flex items-center justify-center gap-2 bg-brand-primary text-white px-6 py-4 rounded-xl font-semibold hover:bg-brand-primary/90 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-brand-primary/20">
+              <Link href="/dashboard/describe-issue" className="flex items-center justify-center gap-2 bg-brand-primary text-white px-6 py-4 rounded-xl font-semibold hover:bg-brand-primary/90 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-brand-primary/20">
                 <MessageSquare size={20} />
                 {t("buttonPrimary")}
-              </button>
-              <button className="flex items-center justify-center gap-2 bg-white text-text-main border border-border-main px-6 py-4 rounded-xl font-semibold hover:bg-bg-subtle transition-all shadow-sm hover:shadow-md">
+              </Link>
+              <Link href="/know-your-rights" className="flex items-center justify-center gap-2 bg-white text-text-main border border-border-main px-6 py-4 rounded-xl font-semibold hover:bg-bg-subtle transition-all shadow-sm hover:shadow-md">
                 <FileText size={20} />
                 {t("buttonSecondary")}
-              </button>
+              </Link>
             </div>
             
             <div className="flex items-center gap-4 pt-6">
