@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "@/i18n/routing";
 import { 
   ChevronRight, 
@@ -17,13 +17,20 @@ import {
   ShieldCheck,
   PhoneCall,
   Star,
-  Loader2
+  Loader2,
+  FileText,
+  CheckSquare,
+  Landmark,
+  Scale
 } from "lucide-react";
 
 export default function CaseAnalysisPage() {
   const router = useRouter();
   const [analysis, setAnalysis] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [revealStep, setRevealStep] = useState(0);
+
+  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const data = sessionStorage.getItem("nyaya_ai_analysis");
@@ -34,13 +41,47 @@ export default function CaseAnalysisPage() {
         console.error("Failed to parse analysis data", e);
       }
     }
-    setIsLoading(false);
+    
+    // Simulate initial loading time for dramatic effect if data exists
+    if (data) {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
+    } else {
+      setIsLoading(false);
+    }
   }, []);
+
+  // Cascading reveal effect
+  useEffect(() => {
+    if (!isLoading && analysis) {
+      const timers = [
+        setTimeout(() => setRevealStep(1), 500),  // Category
+        setTimeout(() => setRevealStep(2), 1500), // Severity
+        setTimeout(() => setRevealStep(3), 2500), // Applicable Rights
+        setTimeout(() => setRevealStep(4), 3500), // Evidence Checklist
+        setTimeout(() => setRevealStep(5), 4500), // Recommended Authority
+        setTimeout(() => setRevealStep(6), 6000), // Complaint Draft
+        setTimeout(() => setRevealStep(7), 7500), // Next Steps
+      ];
+      return () => timers.forEach(clearTimeout);
+    }
+  }, [isLoading, analysis]);
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   if (isLoading) {
     return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-text-light w-8 h-8" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="w-16 h-16 relative flex items-center justify-center">
+          <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-brand-primary rounded-full border-t-transparent animate-spin"></div>
+          <Bot size={24} className="text-brand-primary absolute" />
+        </div>
+        <h2 className="text-xl font-bold text-text-main animate-pulse">NyayaAI is thinking...</h2>
+        <p className="text-text-muted text-sm">Analyzing laws, precedents, and evidence requirements.</p>
       </main>
     );
   }
@@ -61,64 +102,57 @@ export default function CaseAnalysisPage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-6">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-6 print:py-0 print:px-0">
       
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-text-muted mb-4 font-semibold">
-        <span>Home</span>
-        <ChevronRight size={14} />
-        <span>AI Assistant</span>
-        <ChevronRight size={14} />
-        <span className="text-text-main">Case Analysis</span>
+      {/* Hide breadcrumbs and header on print */}
+      <div className="print:hidden">
+        <div className="flex items-center gap-2 text-sm text-text-muted mb-4 font-semibold">
+          <span>Home</span>
+          <ChevronRight size={14} />
+          <span>AI Assistant</span>
+          <ChevronRight size={14} />
+          <span className="text-text-main">Case Analysis</span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-main pb-4 mb-6">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold text-text-main tracking-tight">Smart Analysis</h1>
+            {revealStep >= 7 && (
+              <div className="hidden sm:flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold border border-green-200 animate-in fade-in zoom-in duration-500">
+                <CheckCircle2 size={14} />
+                Analysis Complete
+              </div>
+            )}
+          </div>
+          
+          <div className={`flex items-center gap-3 transition-opacity duration-1000 ${revealStep >= 7 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-text-main text-white rounded-xl text-sm font-semibold hover:bg-black transition-colors shadow-sm">
+              <Download size={16} />
+              Download PDF
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-start">
+      {/* Main Print Container */}
+      <div ref={printRef} className="grid lg:grid-cols-[1fr_320px] gap-8 items-start print:grid-cols-1 print:block">
         
         {/* Main Content (Left) */}
         <div className="space-y-6">
           
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-main pb-4">
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold text-text-main tracking-tight">Case Analysis</h1>
-              <div className="hidden sm:flex items-center gap-1.5 bg-gray-100 text-text-main px-3 py-1.5 rounded-full text-xs font-bold border border-border-main">
-                <CheckCircle2 size={14} className="text-text-main" />
-                AI Analysis Complete
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 bg-white border border-border-main rounded-xl text-sm font-semibold hover:bg-bg-subtle transition-colors shadow-sm">
-                <Download size={16} />
-                Download Report
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-white border border-border-main rounded-xl text-sm font-semibold hover:bg-bg-subtle transition-colors shadow-sm">
-                <Share2 size={16} />
-                Share
-              </button>
-            </div>
-          </div>
-          <p className="text-text-muted">Here is your case analysis and recommended legal action.</p>
-
-          {/* Tabs */}
-          <div className="flex items-center gap-8 border-b border-border-main overflow-x-auto scrollbar-hide text-sm font-semibold">
-            <button className="text-brand-primary border-b-2 border-brand-primary pb-3 whitespace-nowrap">Case Summary</button>
-            <button className="text-text-muted hover:text-text-main pb-3 whitespace-nowrap transition-colors">Applicable Laws</button>
-            <button className="text-text-muted hover:text-text-main pb-3 whitespace-nowrap transition-colors">Evidence Checklist</button>
-            <button className="text-text-muted hover:text-text-main pb-3 whitespace-nowrap transition-colors">Recommended Actions</button>
-            <button className="text-text-muted hover:text-text-main pb-3 whitespace-nowrap transition-colors">Draft Documents</button>
-          </div>
-
           {/* Your Issue Card */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm print:shadow-none print:border-b">
             <div className="flex items-start justify-between gap-4 mb-3">
-              <h3 className="font-bold text-text-main text-lg">Your Issue</h3>
+              <h3 className="font-bold text-text-main text-lg flex items-center gap-2">
+                <FileText size={20} className="text-brand-primary" />
+                Your Issue
+              </h3>
               <button 
                 onClick={() => router.push("/dashboard/describe-issue")}
-                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-border-main rounded-xl text-xs font-bold text-text-main hover:bg-bg-subtle transition-colors shrink-0"
+                className="print:hidden flex items-center gap-2 px-3 py-1.5 bg-white border border-border-main rounded-xl text-xs font-bold text-text-main hover:bg-bg-subtle transition-colors shrink-0"
               >
                 <Pencil size={12} />
-                Edit Issue
+                Edit
               </button>
             </div>
             <p className="text-sm text-text-muted leading-relaxed whitespace-pre-wrap">
@@ -126,112 +160,140 @@ export default function CaseAnalysisPage() {
             </p>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Stats Grid - Step 1 & 2 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 print:grid-cols-2">
             
-            <div className="bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-bg-subtle rounded-full flex items-center justify-center mb-3">
-                <ShoppingCart size={20} className="text-text-main" />
+            {/* Case Category (Step 1) */}
+            <div className={`bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col transition-all duration-700 ${revealStep >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-bg-subtle rounded-xl flex items-center justify-center">
+                  <ShoppingCart size={20} className="text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-text-muted font-semibold">Case Category</p>
+                  <p className="font-bold text-text-main">{analysis.category || "General Dispute"}</p>
+                </div>
               </div>
-              <p className="text-xs text-text-muted font-semibold mb-1">Issue Category</p>
-              <p className="font-bold text-sm text-text-main mb-3">{analysis.category}</p>
-              <p className="text-[11px] text-text-muted mt-auto">Categorized based on your provided details.</p>
             </div>
 
-            <div className="bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-bg-subtle rounded-full flex items-center justify-center mb-3 relative">
-                <ShieldAlert size={20} className="text-text-main" />
-              </div>
-              <p className="text-xs text-text-muted font-semibold mb-1">Severity Level</p>
-              <div className="bg-gray-100 text-text-main px-3 py-1 rounded-full text-xs font-bold mb-3 border border-border-main">
-                {analysis.severity}
-              </div>
-              <p className="text-[11px] text-text-muted mt-auto">Based on standard legal precedents.</p>
-            </div>
-
-            <div className="bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-bg-subtle rounded-full flex items-center justify-center mb-3">
-                <Clock size={20} className="text-text-main" />
-              </div>
-              <p className="text-xs text-text-muted font-semibold mb-1">Likely Resolution Time</p>
-              <p className="font-bold text-sm text-text-main mb-3">{analysis.resolutionTime}</p>
-              <p className="text-[11px] text-text-muted mt-auto">Estimated time for initial response after filing.</p>
-            </div>
-
-          </div>
-
-          {/* AI Summary Card */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-bg-subtle rounded-full flex items-center justify-center shrink-0 border border-border-main">
-                <Bot size={20} className="text-text-main" />
-              </div>
-              <div>
-                <h3 className="font-bold text-text-main text-sm mb-2">AI Summary</h3>
-                <p className="text-[13px] text-text-muted leading-relaxed mb-6">
-                  {analysis.summary}
-                </p>
-                
-                <h4 className="font-bold text-sm text-text-main mb-3">What this means:</h4>
-                <ul className="list-disc list-outside pl-4 space-y-2 text-[13px] text-text-muted">
-                  {analysis.implications?.map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
+            {/* Severity (Step 2) */}
+            <div className={`bg-white border border-border-main rounded-2xl p-5 shadow-sm flex flex-col transition-all duration-700 ${revealStep >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                  <ShieldAlert size={20} className="text-red-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-text-muted font-semibold">Severity</p>
+                  <div className="inline-block bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-red-200 mt-1">
+                    {analysis.severity || "Medium"}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Next Step Banner */}
-          <div className="bg-black rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg shadow-black/10">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center shrink-0">
-                <Lightbulb size={20} className="text-white" />
-              </div>
-              <div>
-                <h3 className="font-bold text-white text-sm mb-1">Next Step</h3>
-                <p className="text-[13px] text-gray-300">Review applicable laws and collect the required evidence to take action.</p>
+          {/* Applicable Rights (Step 3) */}
+          {revealStep >= 3 && (
+            <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:shadow-none print:border-b">
+              <h3 className="font-bold text-text-main text-lg mb-4 flex items-center gap-2">
+                <Scale size={20} className="text-indigo-600" />
+                Applicable Rights & Laws
+              </h3>
+              <ul className="space-y-3">
+                {(analysis.applicableRights || analysis.implications || []).map((right: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm text-text-main bg-bg-subtle/50 p-3 rounded-xl border border-border-main">
+                    <ShieldCheck size={18} className="text-brand-primary shrink-0 mt-0.5" />
+                    <span>{right}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Evidence Checklist (Step 4) */}
+          {revealStep >= 4 && (
+            <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:shadow-none print:border-b">
+              <h3 className="font-bold text-text-main text-lg mb-4 flex items-center gap-2">
+                <CheckSquare size={20} className="text-amber-600" />
+                Evidence Checklist
+              </h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {(analysis.evidenceChecklist || []).map((item: string, idx: number) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 border border-border-main rounded-xl hover:bg-bg-subtle transition-colors cursor-pointer group">
+                    <div className="w-5 h-5 rounded border border-text-light group-hover:border-brand-primary flex items-center justify-center bg-white shrink-0"></div>
+                    <span className="text-sm font-medium text-text-main line-clamp-2">{item}</span>
+                  </div>
+                ))}
+                {(!analysis.evidenceChecklist || analysis.evidenceChecklist.length === 0) && (
+                  <p className="text-sm text-text-muted">No specific evidence checklist generated.</p>
+                )}
               </div>
             </div>
-            <button className="flex items-center justify-center gap-2 bg-white text-black px-6 py-3 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors shrink-0">
-              View Applicable Laws <ArrowRight size={16} />
-            </button>
-          </div>
+          )}
+
+          {/* Recommended Authority (Step 5) */}
+          {revealStep >= 5 && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:bg-none print:border-b print:shadow-none">
+              <h3 className="font-bold text-text-main text-lg mb-2 flex items-center gap-2">
+                <Landmark size={20} className="text-blue-700" />
+                Recommended Authority
+              </h3>
+              <p className="text-sm text-text-main mb-4">You should file your complaint with:</p>
+              <div className="bg-white border border-blue-200 p-4 rounded-xl shadow-sm inline-block font-bold text-blue-900">
+                {analysis.recommendedAuthority || "Appropriate Legal Forum"}
+              </div>
+            </div>
+          )}
+
+          {/* Complaint Draft (Step 6) */}
+          {revealStep >= 6 && analysis.complaintDraft && (
+            <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700 print:shadow-none print:border-0 print:pt-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-text-main text-lg flex items-center gap-2">
+                  <FileText size={20} className="text-text-main" />
+                  Generated Complaint Draft
+                </h3>
+                <button className="print:hidden text-xs font-bold text-brand-primary hover:underline">Copy Text</button>
+              </div>
+              <div className="bg-bg-subtle/30 border border-border-main rounded-xl p-5 font-mono text-sm leading-relaxed whitespace-pre-wrap text-text-main max-h-[400px] overflow-y-auto print:max-h-none print:border-0 print:bg-transparent print:p-0">
+                {analysis.complaintDraft}
+              </div>
+            </div>
+          )}
 
         </div>
 
-        {/* Sidebar Content (Right) */}
-        <div className="space-y-6">
+        {/* Sidebar Content (Right) - Hidden on Print */}
+        <div className="space-y-6 print:hidden">
           
-          {/* At a Glance */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-text-main mb-4">At a Glance</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-border-main pb-3">
-                <span className="text-xs font-semibold text-text-muted">Case ID</span>
-                <span className="text-xs font-bold text-text-main">NYA-{new Date().getFullYear()}-{Math.floor(1000 + Math.random() * 9000)}</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-border-main pb-3">
-                <span className="text-xs font-semibold text-text-muted">Date Analyzed</span>
-                <span className="text-xs font-bold text-text-main">
-                  {new Date().toLocaleDateString("en-US", { day: 'numeric', month: 'short', year: 'numeric' })}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-b border-border-main pb-3">
-                <span className="text-xs font-semibold text-text-muted">Analyzed By</span>
-                <span className="text-xs font-bold text-text-main">NyayaAI Assistant</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-muted">Privacy</span>
-                <span className="text-xs font-bold text-text-main flex items-center gap-1">
-                  100% Secure & Private <ShieldCheck size={12} />
-                </span>
-              </div>
+          {/* Next Steps (Step 7) */}
+          <div className={`bg-black rounded-2xl p-6 shadow-xl transition-all duration-1000 ${revealStep >= 7 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+              <Lightbulb size={18} className="text-yellow-400" />
+              Next Steps
+            </h3>
+            <div className="space-y-4 relative">
+              <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gray-800 z-0"></div>
+              {(analysis.nextSteps || ["Review analysis", "Gather documents", "File complaint"]).map((step: string, idx: number) => (
+                <div key={idx} className="flex gap-4 relative z-10">
+                  <div className="w-6 h-6 rounded-full bg-gray-800 text-white flex items-center justify-center text-xs font-bold shrink-0 border-2 border-black">
+                    {idx + 1}
+                  </div>
+                  <p className="text-sm text-gray-300 mt-0.5">{step}</p>
+                </div>
+              ))}
             </div>
+            <button 
+              onClick={handlePrint}
+              className="w-full mt-6 flex items-center justify-center gap-2 bg-white text-black py-3 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors"
+            >
+              <Download size={16} />
+              Save Case File (PDF)
+            </button>
           </div>
 
-          {/* Urgent Help */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm">
+          {/* Urgent Help - Always visible early */}
+          <div className={`bg-white border border-border-main rounded-2xl p-6 shadow-sm transition-opacity duration-1000 ${revealStep >= 2 ? 'opacity-100' : 'opacity-0'}`}>
             <div className="flex items-start gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-bg-subtle flex items-center justify-center shrink-0">
                 <PhoneCall size={20} className="text-text-main" />
@@ -241,41 +303,10 @@ export default function CaseAnalysisPage() {
                 <p className="text-[11px] text-text-muted mt-1 leading-relaxed">If this is an emergency or you feel threatened, contact authorities immediately.</p>
               </div>
             </div>
-            <button className="w-full flex items-center justify-center gap-2 bg-black text-white py-2.5 rounded-xl text-sm font-bold hover:bg-gray-800 transition-colors">
+            <button className="w-full flex items-center justify-center gap-2 bg-text-main text-white py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-colors">
               <PhoneCall size={16} />
               Emergency Contacts
             </button>
-          </div>
-
-          {/* Helpful Tip */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm relative overflow-hidden">
-            <div className="flex items-start gap-3 mb-6 relative z-10">
-              <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center shrink-0">
-                <Star size={14} fill="currentColor" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm">Helpful Tip</h4>
-                <p className="text-[11px] text-text-muted mt-1 leading-relaxed">Keep all communication, payment screenshots, and transaction details safe. They will strengthen your case.</p>
-              </div>
-            </div>
-            
-            {/* Placeholder for Gavel/Books illustration */}
-            <div className="w-full h-24 bg-bg-subtle rounded-xl flex items-center justify-center border border-border-main text-text-light text-xs font-bold uppercase relative z-10">
-              Illustration Area
-            </div>
-          </div>
-
-          {/* Rate Analysis */}
-          <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm">
-            <h4 className="font-bold text-sm mb-1">Rate This Analysis</h4>
-            <p className="text-[11px] text-text-muted mb-4">Was this analysis helpful?</p>
-            <div className="flex items-center gap-2 text-text-light">
-              <button className="hover:text-yellow-400 transition-colors"><Star size={20} /></button>
-              <button className="hover:text-yellow-400 transition-colors"><Star size={20} /></button>
-              <button className="hover:text-yellow-400 transition-colors"><Star size={20} /></button>
-              <button className="hover:text-yellow-400 transition-colors"><Star size={20} /></button>
-              <button className="hover:text-yellow-400 transition-colors"><Star size={20} /></button>
-            </div>
           </div>
 
         </div>

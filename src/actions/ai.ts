@@ -14,9 +14,14 @@ export async function analyzeLegalIssueAction(issueText: string) {
     {
       "category": "String (e.g. Consumer Dispute, Cyber Crime, Property Dispute)",
       "severity": "String (Low, Medium, or High)",
+      "applicableRights": ["String (Right 1)", "String (Right 2)"],
+      "evidenceChecklist": ["String (Evidence 1)", "String (Evidence 2)"],
+      "recommendedAuthority": "String (e.g., National Consumer Disputes Redressal Commission)",
+      "complaintDraft": "String (A formal, polite complaint letter draft ready for submission. Use \n for newlines.)",
+      "nextSteps": ["String (Step 1)", "String (Step 2)"],
       "resolutionTime": "String (e.g. 30 - 60 Days)",
       "summary": "String (A 2-3 sentence summary of their issue based on laws)",
-      "implications": ["String (Bullet point 1)", "String (Bullet point 2)", "String (Bullet point 3)"]
+      "implications": ["String (Bullet point 1)", "String (Bullet point 2)"]
     }`;
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
