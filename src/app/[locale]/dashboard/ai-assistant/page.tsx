@@ -12,15 +12,15 @@ import {
 } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc, arrayUnion } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { chatWithAiAction } from "@/actions/ai";
 
 export default function CaseAnalysisPage() {
   const router = useRouter();
-  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   
   // Chat History State
-  const [chats, setChats] = useState<Record<string, unknown>[]>([]);
+  const [chats, setChats] = useState<any[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
@@ -152,7 +152,7 @@ export default function CaseAnalysisPage() {
       const chatRef = doc(db, `users/${user.uid}/ai_chats`, currentChatId);
       const updates: Record<string, unknown> = { messages: arrayUnion(userMessage) };
       
-      if (activeChat?.title === "New Conversation" && activeChat.messages?.length === 0) {
+      if (activeChat?.title === "New Conversation" && ((activeChat.messages as any[]) || []).length === 0) {
          updates.title = inputText.substring(0, 30) + "...";
       }
       await updateDoc(chatRef, updates);
