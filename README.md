@@ -16,7 +16,7 @@
 
   <br />
 
-  [🌐 Live Demo](#) · [📖 System Flowcharts](#-system-architecture--flowcharts) · [🔥 Firebase Schema](#-firebase-firestore-schema-structure) · [🐛 Report Issue](https://github.com/yashharfode/Nyaya-AI/issues)
+  [🌐 Live Demo](https://nyaya-ai-official.vercel.app/) · [📖 System Flowcharts](#-system-architecture--flowcharts) · [🔥 Firebase Schema](#-firebase-firestore-schema-structure) · [🐛 Report Issue](https://github.com/yashharfode/Nyaya-AI/issues)
 
 </div>
 
