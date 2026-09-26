@@ -14,6 +14,7 @@ import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, update
 import { onAuthStateChanged } from "firebase/auth";
 import { chatWithAiAction, correctSpeechSpellingAction } from "@/actions/ai";
 import { useVoiceRecording } from "@/hooks/useVoiceRecording";
+import { useSidebar } from "@/components/SidebarContext";
 
 function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }) {
   if (!text) return null;
@@ -253,8 +254,14 @@ function FormattedLegalText({ text, isUser }: { text: string; isUser?: boolean }
 
 export default function CaseAnalysisPage() {
   const router = useRouter();
+  const { setIsCollapsed } = useSidebar();
   const [user, setUser] = useState<any | null>(null);
   
+  // Automatically minimize main sidebar when opening AI assistant for maximal focused workspace
+  useEffect(() => {
+    setIsCollapsed(true);
+  }, [setIsCollapsed]);
+
   // Chat History State
   const [chats, setChats] = useState<any[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
@@ -316,7 +323,7 @@ export default function CaseAnalysisPage() {
   const [selectedModel, setSelectedModel] = useState<string>("inclusionai/ling-3.0-flash:free");
   const [enableReasoning, setEnableReasoning] = useState<boolean>(true);
   const [openReasoningMsg, setOpenReasoningMsg] = useState<Record<number, boolean>>({});
-  const [showHistorySidebar, setShowHistorySidebar] = useState<boolean>(true);
+  const [showHistorySidebar, setShowHistorySidebar] = useState<boolean>(false);
   const [enableFollowUps, setEnableFollowUps] = useState<boolean>(true);
   const [chatSearchQuery, setChatSearchQuery] = useState<string>("");
 
