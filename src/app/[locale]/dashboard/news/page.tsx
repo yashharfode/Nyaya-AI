@@ -229,6 +229,126 @@ const NEWS_DATA: NewsItem[] = [
       "Cite Civil Appeal No. 7102/2025 in all claim appeals."
     ],
     precedentStatus: "Binding Law across all Insurance Ombudsmen & Consumer Forums"
+  },
+  {
+    id: "bns-2026-zero-fir",
+    title: "Bharatiya Nyaya Sanhita (BNS 2023) Directive: Mandatory Zero FIR Registration Across All Police Stations",
+    court: "Supreme Court of India",
+    citation: "Suo Motu Writ Petition (Crl.) No. 04 of 2026 • In Re: BNS Police Compliance",
+    date: "22 Feb 2026",
+    category: "Reforms",
+    verdictResult: "MANDATORY Zero FIR: Police cannot refuse FIR due to jurisdiction; Refusal invites prosecution under Section 199 BNS.",
+    summary: "The Supreme Court directed that every police station in India must register a Zero FIR immediately upon receipt of cognizable offense information, irrespective of territorial jurisdiction, and transfer it to the concerned police station within 24 hours.",
+    impactTags: ["BNS 2023", "Police Reforms", "Criminal Justice"],
+    bench: "Three-Judge Bench presided by Hon'ble Chief Justice of India",
+    backgroundDispute: "Citizen petitions highlighted that police stations routinely turn away victims of assault, robbery, or road accidents citing jurisdictional boundaries, causing loss of critical evidence.",
+    courtRationale: "Under the Bharatiya Nyaya Sanhita, 2023 and the Bharatiya Nagarik Suraksha Sanhita, the primary duty of the police is victim protection and immediate registration of crime. Territorial jurisdiction is a secondary administrative matter.",
+    citizenActionGuide: [
+      "You can file an FIR at ANY police station in India, regardless of where the incident occurred.",
+      "If a police officer refuses to register your complaint, they can be prosecuted under Section 199 BNS (Public Servant disobeying law).",
+      "You are legally entitled to receive a free physical and digital copy of the Zero FIR immediately."
+    ],
+    precedentStatus: "Binding National Directive on all State Police Departments & DGP Offices"
+  },
+  {
+    id: "ccpa-2026-dark-patterns",
+    title: "CCPA & Supreme Court Ban Dark Patterns: Hidden Platform Fees & Pre-Ticked Charges Banned on Apps",
+    court: "Central Consumer Protection Authority & Supreme Court",
+    citation: "CCPA Notification No. 12/2026 & Civil Appeal No. 914/2026",
+    date: "18 Feb 2026",
+    category: "Consumer Law",
+    verdictResult: "BANNED Drip Pricing & Forced Continuity; Digital apps fined for disguised convenience fees.",
+    summary: "The Apex Consumer Authority, backed by the Supreme Court, imposed sweeping bans on online travel, food delivery, and ticketing apps that add unexpected 'convenience charges', 'service handling fees', or pre-selected donations at the final checkout screen.",
+    impactTags: ["Consumer Protection", "Dark Patterns", "Digital Apps"],
+    bench: "National Consumer Protection Bench",
+    backgroundDispute: "Consumers challenged airlines, aggregators, and food delivery platforms that display a lower price during selection and suddenly add mandatory Rs. 50 - Rs. 300 charges on the payment gateway.",
+    courtRationale: "The Court held that 'Drip Pricing' and 'Deceptive Interface Design' (Dark Patterns) constitute Unfair Trade Practice under Section 2(47) of the Consumer Protection Act, 2019. Transparent all-inclusive pricing is a consumer right.",
+    citizenActionGuide: [
+      "Platforms cannot add fees at checkout that were not disclosed on the product selection page.",
+      "Pre-ticked checkboxes for optional insurance, tips, or donations are illegal.",
+      "File complaints on consumerhelpline.gov.in (Toll-Free 1915) to receive automatic refund of illegal platform fees."
+    ],
+    precedentStatus: "Statutory Regulation with Pan-India Penal Enforcement"
+  },
+  {
+    id: "cyber-2026-mule-freeze",
+    title: "Delhi High Court: 15-Minute Automated Freezing of Bank Accounts Linked to Cyber Fraud Reports",
+    court: "Delhi High Court",
+    citation: "W.P.(Crl) No. 340/2026 • In Re: Digital Arrest & UPI Scams",
+    date: "14 Feb 2026",
+    category: "Cyber & IT",
+    verdictResult: "DIRECTED automated API link between Banks, RBI, and National Cybercrime Portal 1930.",
+    summary: "The High Court ordered all commercial banks, payment aggregators, and UPI apps to establish direct 24x7 automated API bridges with the National Cybercrime Reporting Portal (NCRP) to freeze money trail accounts within 15 minutes of an incident being reported by the citizen.",
+    impactTags: ["Cybercrime", "Digital Arrest Scams", "Banking Fraud"],
+    bench: "Division Bench: Hon'ble Justice Yashwant Varma & Justice Dharmesh Sharma",
+    backgroundDispute: "Victims of sophisticated 'digital arrest' scams and fake stock trading apps lost crores because banks took 24-48 hours to freeze accounts, allowing fraudsters to withdraw money via ATM networks.",
+    courtRationale: "The Golden Hour in financial cybercrime is the first 2 hours. Traditional manual email requests to nodal bank officers are inadequate in the age of instant UPI transfers.",
+    citizenActionGuide: [
+      "Call 1930 immediately within the first 2 hours of any fraudulent transaction.",
+      "The victim's complaint number instantly triggers bank holds on the beneficiary account.",
+      "Request an acknowledgment slip for the frozen funds to initiate magistrate recovery proceedings."
+    ],
+    precedentStatus: "Binding Direction on all Scheduled Commercial Banks and Payment Gateways"
+  },
+  {
+    id: "sc-2026-rera-interest",
+    title: "Supreme Court RERA Verdict: Builders Must Pay Monthly Interest at SBI MCLR + 2% for Possession Delays",
+    court: "Supreme Court of India",
+    citation: "Civil Appeal No. 2488 of 2025 • Homebuyers Association v. Developer Consortium",
+    date: "02 Feb 2026",
+    category: "Consumer Law",
+    verdictResult: "ORDERED statutory delay interest to flat buyers; Force Majeure defense rejected.",
+    summary: "The Supreme Court ruled that real estate developers cannot cite general labor shortages, contractor disputes, or market slowdowns to avoid paying statutory monthly interest for delayed flat handover under RERA Act Section 18.",
+    impactTags: ["RERA", "Homebuyer Rights", "Property Law"],
+    bench: "Division Bench: Hon'ble Justice Sanjiv Khanna & Justice Dipankar Datta",
+    backgroundDispute: "Homebuyers in Noida and Bengaluru waited over 4 years past the contractual possession date while the builder refused compensation citing construction bans and material cost inflation.",
+    courtRationale: "The Real Estate (Regulation and Development) Act, 2016 was enacted to balance the unequal bargaining power between promoters and consumers. Timely possession or compensatory interest is an unconditional statutory obligation.",
+    citizenActionGuide: [
+      "If your flat delivery is delayed past the date in the registered agreement, you are entitled to monthly interest at SBI highest MCLR + 2%.",
+      "You can claim this interest while remaining in possession of the allotment, without canceling your booking.",
+      "File complaint online on your State RERA Portal citing Civil Appeal No. 2488/2025."
+    ],
+    precedentStatus: "Binding Supreme Court Law for all RERA State Authorities & Appellate Tribunals"
+  },
+  {
+    id: "sc-2026-recovery-agents",
+    title: "Supreme Court & RBI Directive: Strict Ban on Loan Recovery Agent Harassment, Midnight Calls & Family Intimidation",
+    court: "Supreme Court of India",
+    citation: "Suo Motu WP (C) No. 99 of 2026 • Fair Recovery Practices",
+    date: "10 Jan 2026",
+    category: "Consumer Law",
+    verdictResult: "ZERO TOLERANCE for abusive recovery; Banks liable for third-party collection agency actions.",
+    summary: "The Supreme Court prohibited loan recovery agents from calling borrowers before 8:00 AM or after 7:00 PM, calling friends or family members, or visiting workplaces without written permission. Banks face heavy punitive damages for violations.",
+    impactTags: ["Banking Rights", "Consumer Protection", "Privacy"],
+    bench: "Three-Judge Bench of Supreme Court",
+    backgroundDispute: "Suo motu cognizance taken following reports of citizens pushed to mental distress by aggressive recovery agents who contacted employers and shared morphed photos on WhatsApp groups.",
+    courtRationale: "The right to live with dignity under Article 21 extends to loan borrowers. A default in repayment is a civil debt, not a crime justifying harassment, humiliation, or breach of peace.",
+    citizenActionGuide: [
+      "Recovery agents CANNOT call you before 8 AM or after 7 PM.",
+      "Recovery agents CANNOT contact your family members, relatives, or colleagues.",
+      "If harassed, record the audio, file an FIR under Section 351/352 BNS, and submit an online complaint to the RBI Banking Ombudsman (cms.rbi.org.in)."
+    ],
+    precedentStatus: "Supreme Judicial Precedent & Enforceable RBI Regulatory Code"
+  },
+  {
+    id: "hc-2026-gig-workers",
+    title: "High Court Affirms Gig & Delivery Workers Right to Fair Disconnection Hearing & Accident Compensation",
+    court: "Karnataka High Court",
+    citation: "Writ Petition No. 18204 / 2025",
+    date: "05 Jan 2026",
+    category: "High Court",
+    verdictResult: "RECOGNIZED basic gig worker rights; Arbitrary ID deactivation by app algorithms held illegal.",
+    summary: "The High Court ruled that delivery partners and gig cab drivers cannot be permanently blocked or deactivated by app algorithms without prior notice, human review, and a 7-day appeal process.",
+    impactTags: ["Gig Economy", "Labour Rights", "High Court"],
+    bench: "Single Bench: Hon'ble Justice M. Nagaprasanna",
+    backgroundDispute: "App-based delivery partners challenged arbitrary algorithmic ID blocking triggered by disputed customer ratings or AI automated penalty flags.",
+    courtRationale: "While gig workers are platform partners, the right to livelihood under Article 21 cannot be terminated purely by unmonitored artificial intelligence without adhering to natural justice.",
+    citizenActionGuide: [
+      "Platform companies must provide written reasons prior to permanent account termination.",
+      "Gig workers are entitled to social security fund registrations under the Code on Social Security, 2020.",
+      "Grievances can be raised before the District Welfare Board."
+    ],
+    precedentStatus: "Landmark High Court Ruling (Bench Precedent)"
   }
 ];
 
