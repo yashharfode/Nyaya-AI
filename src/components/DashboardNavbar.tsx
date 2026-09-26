@@ -55,7 +55,10 @@ export default function DashboardNavbar({ user }: { user?: { name: string; email
         
 
         {/* Notifications */}
-        <button className="relative p-2 text-text-light hover:text-text-main hover:bg-bg-subtle rounded-full transition-colors">
+        <button 
+          aria-label="View notifications"
+          className="relative p-2 text-text-light hover:text-text-main hover:bg-bg-subtle rounded-full transition-colors"
+        >
           <Bell size={20} />
           <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-text-main rounded-full"></span>
         </button>
@@ -71,7 +74,12 @@ export default function DashboardNavbar({ user }: { user?: { name: string; email
               <path d="m6 9 6 6 6-6"/>
             </svg>
           </div>
-          <button onClick={handleLogout} className="p-2 text-text-light hover:text-red-500 hover:bg-red-50 rounded-full transition-colors ml-1" title="Logout">
+          <button 
+            onClick={handleLogout} 
+            className="p-2 text-text-light hover:text-red-500 hover:bg-red-50 rounded-full transition-colors ml-1" 
+            title="Logout"
+            aria-label="Logout of account"
+          >
             <LogOut size={16} />
           </button>
         </div>

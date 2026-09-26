@@ -11,8 +11,7 @@ import {
   Sparkles, 
   HelpCircle,
   ArrowRight,
-  ShieldCheck,
-  Scale
+  ShieldCheck
 } from "lucide-react";
 import { 
   askDocumentQuestionAction, 
@@ -117,7 +116,7 @@ export default function GroundedDocumentQA({
             <span>Ask Your Document</span>
           </h3>
           <p className="text-xs text-text-muted mt-0.5">
-            Interrogate <span className="font-bold text-black font-mono">"{documentTitle}"</span>. Answers are strictly grounded with exact clause citations and no legal guessing.
+            Interrogate <span className="font-bold text-black font-mono">&ldquo;{documentTitle}&rdquo;</span>. Answers are strictly grounded with exact clause citations and no legal guessing.
           </p>
         </div>
         <div className="flex items-center gap-2 bg-bg-subtle px-3 py-1.5 rounded-xl border border-border-main text-[11px] font-bold text-text-muted shrink-0">
@@ -237,7 +236,7 @@ export default function GroundedDocumentQA({
                             </span>
                           </div>
                           <p className="font-mono text-[11px] italic text-blue-900 leading-relaxed">
-                            "{cite.exactSnippet}"
+                            &ldquo;{cite.exactSnippet}&rdquo;
                           </p>
                         </div>
                       ))}

@@ -15,6 +15,7 @@ export default function SignupPage() {
   
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [isGooglePending, setIsGooglePending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -50,7 +51,6 @@ export default function SignupPage() {
         router.push("/dashboard");
       }
     } catch (err: any) {
-      console.error(err);
       if (err.code === 'auth/email-already-in-use') {
         setError("This email is already registered. Please log in instead.");
       } else if (err.code === 'auth/weak-password') {
@@ -66,8 +66,10 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = async () => {
+    if (isGooglePending || isPending) return;
+    setIsGooglePending(true);
+    setError(null);
     try {
-      setError(null);
       const result = await signInWithPopup(auth, googleProvider);
       
       // Save to Firestore
@@ -91,12 +93,19 @@ export default function SignupPage() {
         router.push("/dashboard");
       }
     } catch (err: any) {
-      console.error(err);
-      if (err.code === 'auth/popup-closed-by-user') {
+      // Gracefully handle expected user/browser popup events without console.error noise
+      if (
+        err?.code === 'auth/popup-closed-by-user' ||
+        err?.code === 'auth/cancelled-popup-request'
+      ) {
         setError(null);
+      } else if (err?.code === 'auth/popup-blocked') {
+        setError("Sign-in popup was blocked by your browser. Please allow popups for this site or use email registration.");
       } else {
         setError(err.message || "Failed to sign up with Google");
       }
+    } finally {
+      setIsGooglePending(false);
     }
   };
 
@@ -225,7 +234,8 @@ export default function SignupPage() {
             <button 
               onClick={handleGoogleSignup}
               type="button"
-              className="w-full flex items-center justify-center gap-3 bg-white border border-border-main text-text-main font-semibold rounded-xl py-3 hover:bg-bg-subtle transition-all shadow-sm"
+              disabled={isGooglePending || isPending}
+              className="w-full flex items-center justify-center gap-3 bg-white border border-border-main text-text-main font-semibold rounded-xl py-3 hover:bg-bg-subtle transition-all shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

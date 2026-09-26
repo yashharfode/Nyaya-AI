@@ -207,7 +207,7 @@ export async function chatWithAiAction(
     }
 
     const data = await response.json();
-    let content = data.choices[0]?.message?.content;
+    const content = data.choices[0]?.message?.content;
     const reasoningText = data.choices[0]?.message?.reasoning || data.choices[0]?.message?.reasoning_content || null;
     const reasoningDetails = data.choices[0]?.message?.reasoning_details || null;
     

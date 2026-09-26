@@ -1251,11 +1251,11 @@ export default function CaseAnalysisPage() {
             </div>
             <div className="min-w-0">
               <h2 className="font-extrabold text-text-main text-xs sm:text-sm md:text-base leading-tight truncate">NyayaAI Legal Assistant</h2>
-              <p className="text-[10px] sm:text-[11px] text-text-muted font-medium truncate hidden sm:block">Powered by OpenRouter AI • Reasoning OS</p>
+              <p className="text-[10px] sm:text-[11px] text-text-muted font-medium truncate hidden sm:block">Powered by Google Gemini & OpenRouter AI • Reasoning OS</p>
             </div>
           </div>
 
-          {/* OpenRouter Model Selector & Actions */}
+          {/* Model Selector & Actions */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <div className="flex items-center gap-1 bg-bg-subtle border border-border-main rounded-xl px-2 py-1.5 text-xs font-bold text-text-main shadow-2xs">
               <Zap size={13} className="text-amber-500 shrink-0" />
@@ -1263,10 +1263,11 @@ export default function CaseAnalysisPage() {
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
                 className="bg-transparent outline-none font-bold text-xs text-text-main cursor-pointer max-w-[110px] sm:max-w-[140px] truncate pr-0.5"
-                title="Select OpenRouter model"
+                title="Select Legal AI model"
               >
+                <option value="google/gemini-2.0-flash-exp:free">✨ Gemini 2.0</option>
+                <option value="google/gemma-4-26b-a4b-it:free">🌐 Gemma 4 (Google)</option>
                 <option value="inclusionai/ling-3.0-flash:free">⚡ ling-3.0-flash</option>
-                <option value="google/gemma-4-26b-a4b-it:free">🌐 gemma-4-26b</option>
                 <option value="meta-llama/llama-3.3-70b-instruct:free">🦙 llama-3.3-70b</option>
                 <option value="deepseek/deepseek-r1:free">🧠 deepseek-r1</option>
               </select>
