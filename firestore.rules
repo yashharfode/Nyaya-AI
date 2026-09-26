@@ -21,6 +21,11 @@ service cloud.firestore {
       match /document_analyses/{docId} {
         allow read, write: if isSignedIn() && request.auth.uid == userId;
       }
+
+      // Match the documents subcollection
+      match /documents/{docId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
     }
 
     // Match the cases collection
