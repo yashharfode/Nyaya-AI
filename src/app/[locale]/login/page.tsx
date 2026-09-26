@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Scale, Eye, EyeOff, ShieldCheck, Lock, Users } from "lucide-react";
 import { Link, useRouter } from "@/i18n/routing";
-import { createSessionAction, bypassLoginAction } from "@/actions/auth";
+import { createSessionAction } from "@/actions/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 

@@ -16,6 +16,11 @@ service cloud.firestore {
       match /ai_chats/{chatId} {
         allow read, write: if isSignedIn() && request.auth.uid == userId;
       }
+
+      // Match the document_analyses subcollection
+      match /document_analyses/{docId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
     }
 
     // Match the cases collection

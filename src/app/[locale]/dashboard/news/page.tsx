@@ -306,10 +306,10 @@ export default function LegalNewsPage() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
       
       {/* Executive Header */}
-      <div className="bg-white border-2 border-black rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white border-2 border-black rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-5">
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase inline-flex items-center gap-1.5">
@@ -320,10 +320,10 @@ export default function LegalNewsPage() {
               Live Court Sessions
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-text-main tracking-tight">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-text-main tracking-tight">
             Legal News & Court Precedents
           </h1>
-          <p className="text-sm text-text-muted mt-2 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-muted mt-2 max-w-2xl leading-relaxed">
             Verified judicial orders, Supreme Court constitutional benches, High Court directions, and statutory amendments across India. Click any order for a simplified Citizen Explainer.
           </p>
         </div>
@@ -331,29 +331,29 @@ export default function LegalNewsPage() {
         <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <button
             onClick={() => setAiBriefingOpen(!aiBriefingOpen)}
-            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-black text-white rounded-2xl text-sm font-bold hover:bg-gray-800 transition-all shadow-md"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-black text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-gray-800 transition-all shadow-md active:scale-95"
           >
             <Sparkles size={16} className="text-amber-400" />
-            {aiBriefingOpen ? "Hide Executive Briefing" : "Monthly Legal Briefing"}
+            <span>{aiBriefingOpen ? "Hide Executive Briefing" : "Monthly Legal Briefing"}</span>
           </button>
         </div>
       </div>
 
       {/* AI Executive Briefing Expandable Card */}
       {aiBriefingOpen && (
-        <div className="bg-[#F8FAFC] border-2 border-black rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden animate-in fade-in slide-in-from-top-3 duration-300">
+        <div className="bg-[#F8FAFC] border-2 border-black rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm relative overflow-hidden animate-in fade-in slide-in-from-top-3 duration-300">
           <div className="flex items-center justify-between mb-5 border-b border-border-main pb-4">
             <div className="flex items-center gap-2.5">
               <Sparkles size={22} className="text-amber-600" />
-              <h3 className="font-black text-lg text-text-main">
+              <h3 className="font-black text-base sm:text-lg text-text-main">
                 AI Executive Briefing • Key Indian Legal Trends & Precedents
               </h3>
             </div>
-            <span className="text-xs font-bold text-text-main bg-white px-3.5 py-1.5 rounded-full border border-black">
+            <span className="text-xs font-bold text-text-main bg-white px-3 py-1 rounded-full border border-black">
               Updated Daily
             </span>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 text-xs font-medium text-text-main">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 text-xs font-medium text-text-main">
             <div className="bg-white p-5 rounded-2xl border-2 border-black shadow-sm">
               <h4 className="font-black text-text-main mb-2 flex items-center gap-2 text-sm">
                 <TrendingUp size={16} className="text-green-600" /> Consumer Rights
@@ -384,14 +384,14 @@ export default function LegalNewsPage() {
 
       {/* Landmark Judgment Hero Card */}
       {landmarkItem && (
-        <div className="bg-gradient-to-br from-white to-[#F8FAFC] border-2 border-black rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
-          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8">
-            <div className="space-y-4 max-w-4xl">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="bg-black text-white px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+        <div className="bg-gradient-to-br from-white to-[#F8FAFC] border-2 border-black rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 shadow-lg relative overflow-hidden">
+          <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 sm:gap-8">
+            <div className="space-y-4 max-w-4xl flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
                   ★ CONSTITUTIONAL LANDMARK
                 </span>
-                <span className="bg-amber-100 text-amber-900 px-3.5 py-1 rounded-full text-xs font-bold border border-amber-300">
+                <span className="bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-xs font-bold border border-amber-300">
                   Article 141 Binding Precedent
                 </span>
                 <span className="bg-white text-text-main px-3 py-1 rounded-full text-xs font-bold border border-border-main">
@@ -404,12 +404,12 @@ export default function LegalNewsPage() {
 
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="text-xs font-black text-text-muted uppercase tracking-wider font-mono">
+                  <p className="text-xs font-black text-text-muted uppercase tracking-wider font-mono truncate">
                     {landmarkItem.citation}
                   </p>
                   <button
                     onClick={(e) => handleCopyCitation(landmarkItem.citation, e)}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-brand-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-brand-primary hover:underline shrink-0"
                     title="Copy formal citation"
                   >
                     {copiedCitation === landmarkItem.citation ? (
@@ -417,27 +417,27 @@ export default function LegalNewsPage() {
                     ) : (
                       <Copy size={13} />
                     )}
-                    {copiedCitation === landmarkItem.citation ? "Copied" : "Copy Citation"}
+                    <span>{copiedCitation === landmarkItem.citation ? "Copied" : "Copy Citation"}</span>
                   </button>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-black text-text-main leading-tight">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-text-main leading-tight">
                   {landmarkItem.title}
                 </h2>
                 {landmarkItem.bench && (
-                  <p className="text-xs font-bold text-text-main mt-2">
+                  <p className="text-xs font-bold text-text-muted mt-2">
                     {landmarkItem.bench}
                   </p>
                 )}
               </div>
 
               {/* Executive Order Box */}
-              <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-sm">
+              <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-sm">
                 <p className="text-xs font-black uppercase tracking-wider text-green-800 mb-1 flex items-center gap-1.5">
                   <Award size={15} className="text-green-700" />
                   COURT RULING & DIRECTIVE:
                 </p>
-                <p className="text-sm font-black text-text-main">
+                <p className="text-xs sm:text-sm font-black text-text-main leading-snug">
                   {landmarkItem.verdictResult}
                 </p>
                 <p className="text-xs text-text-muted mt-2 leading-relaxed font-medium">
@@ -455,41 +455,41 @@ export default function LegalNewsPage() {
             </div>
 
             {/* Hero Card Actions */}
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full lg:w-60">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:flex xl:flex-col gap-2.5 sm:gap-3 shrink-0 w-full xl:w-64">
               <button 
                 onClick={() => setSelectedExplainer(landmarkItem)}
-                className="w-full flex items-center justify-center gap-2 bg-black text-white px-5 py-3.5 rounded-2xl font-bold text-sm hover:bg-gray-800 transition-all shadow-md"
+                className="w-full flex items-center justify-center gap-2 bg-black text-white px-4 py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm hover:bg-gray-800 transition-all shadow-md active:scale-95"
               >
                 <BookOpen size={16} />
-                Read Executive Explainer
+                <span>Read Executive Explainer</span>
               </button>
 
               <button 
                 onClick={(e) => handleShareWhatsApp(e, landmarkItem)}
-                className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white px-5 py-3.5 rounded-2xl font-bold text-sm hover:bg-[#1ebd5b] transition-all shadow-sm"
+                className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm hover:bg-[#1ebd5b] transition-all shadow-sm active:scale-95"
               >
                 <Share2 size={16} />
-                Share on WhatsApp
+                <span>Share on WhatsApp</span>
               </button>
 
               <button 
                 onClick={() => handleAnalyzeWithAI(landmarkItem)}
-                className="w-full flex items-center justify-center gap-2 bg-white text-text-main border-2 border-black px-5 py-3.5 rounded-2xl font-bold text-sm hover:bg-bg-subtle transition-all shadow-sm"
+                className="w-full flex items-center justify-center gap-2 bg-white text-text-main border-2 border-black px-4 py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm hover:bg-bg-subtle transition-all shadow-sm active:scale-95"
               >
                 <Sparkles size={16} />
-                Ask AI About My Rights
+                <span>Ask AI About My Rights</span>
               </button>
 
               <button 
                 onClick={() => toggleBookmark(landmarkItem.id)}
-                className={`w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm border-2 transition-all ${
+                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm border-2 transition-all active:scale-95 ${
                   bookmarkedIds.includes(landmarkItem.id)
                     ? "bg-black text-white border-black shadow-sm"
                     : "bg-white text-text-main border-black hover:bg-bg-subtle"
                 }`}
               >
                 <Bookmark size={16} />
-                {bookmarkedIds.includes(landmarkItem.id) ? "Saved to Bookmarks" : "Bookmark Judgment"}
+                <span>{bookmarkedIds.includes(landmarkItem.id) ? "Saved to Bookmarks" : "Bookmark Judgment"}</span>
               </button>
             </div>
           </div>
@@ -497,15 +497,15 @@ export default function LegalNewsPage() {
       )}
 
       {/* Filter Toolbar & Search */}
-      <div className="bg-white border-2 border-black rounded-2xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white border-2 border-black rounded-2xl p-3 sm:p-4 shadow-sm flex flex-col lg:flex-row gap-3 sm:gap-4 items-stretch lg:items-center justify-between">
         
         {/* Categories */}
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide w-full md:w-auto pb-1 md:pb-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide w-full lg:w-auto pb-1 lg:pb-0">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2.5 rounded-full text-xs font-black tracking-wide shrink-0 transition-all ${
+              className={`px-3.5 py-2 rounded-full text-xs font-black tracking-wide shrink-0 transition-all ${
                 selectedCategory === cat 
                   ? "bg-black text-white shadow-sm" 
                   : "bg-bg-subtle text-text-muted hover:text-text-main hover:bg-gray-200"
@@ -517,21 +517,21 @@ export default function LegalNewsPage() {
         </div>
 
         {/* Search Input */}
-        <div className="relative w-full md:w-80 shrink-0">
+        <div className="relative w-full lg:w-72 xl:w-80 shrink-0">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-light" />
           <input 
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search citation, court, or topic..."
-            className="w-full pl-10 pr-4 py-2.5 bg-bg-subtle border border-border-main rounded-xl text-xs font-bold outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-bg-subtle border border-border-main rounded-xl text-xs font-bold outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
           />
         </div>
 
       </div>
 
-      {/* Professional 2-Column Judgments Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Professional Judgments Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-5 sm:gap-6">
         {filteredNews.map((item) => (
           <div 
             key={item.id}
@@ -603,31 +603,31 @@ export default function LegalNewsPage() {
               </div>
 
               {/* Professional Action Bar */}
-              <div className="flex items-center justify-between pt-4 border-t-2 border-border-main gap-2 flex-wrap sm:flex-nowrap">
-                <div className="flex items-center gap-2">
+              <div className="pt-4 border-t-2 border-border-main flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2 flex-1">
                   <button
                     onClick={() => setSelectedExplainer(item)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all shadow-sm"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all shadow-xs"
                     title="Read deep-dive Citizen Judgment Explainer"
                   >
                     <BookOpen size={14} />
-                    Read Explainer
+                    <span>Read Explainer</span>
                   </button>
 
                   <button
                     onClick={(e) => handleShareWhatsApp(e, item)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-[#25D366] text-white rounded-xl text-xs font-bold hover:bg-[#1ebd5b] transition-all shadow-sm"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-[#25D366] text-white rounded-xl text-xs font-bold hover:bg-[#1ebd5b] transition-all shadow-xs"
                     title="Share judgment via WhatsApp"
                   >
                     <Share2 size={14} />
-                    WhatsApp
+                    <span>WhatsApp</span>
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-end">
                   <button
                     onClick={() => toggleBookmark(item.id)}
-                    className={`p-2.5 rounded-xl border-2 transition-all ${
+                    className={`p-2 rounded-xl border-2 transition-all shrink-0 ${
                       bookmarkedIds.includes(item.id)
                         ? "bg-black text-white border-black"
                         : "bg-white text-text-muted border-border-main hover:bg-bg-subtle"
@@ -639,10 +639,10 @@ export default function LegalNewsPage() {
 
                   <button
                     onClick={() => handleAnalyzeWithAI(item)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-white text-text-main border-2 border-black rounded-xl text-xs font-bold hover:bg-bg-subtle transition-all"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-white text-text-main border-2 border-black rounded-xl text-xs font-bold hover:bg-bg-subtle transition-all shadow-xs"
                   >
                     <Sparkles size={14} />
-                    Ask AI
+                    <span>Ask AI</span>
                   </button>
                 </div>
               </div>
@@ -810,6 +810,6 @@ export default function LegalNewsPage() {
         </div>
       )}
 
-    </main>
+    </div>
   );
 }

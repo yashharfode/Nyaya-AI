@@ -55,6 +55,10 @@ export async function createSessionAction({ firebaseUid, email, name }: { fireba
 
 // Development Only: Bypass Login
 export async function bypassLoginAction() {
+  if (process.env.NODE_ENV === "production") {
+    return { error: "Development bypass is strictly disabled in production." };
+  }
+
   const token = await new SignJWT({ 
     userId: "dev_bypass_uid_123", 
     firebaseUid: "dev_bypass_uid_123", 
@@ -69,7 +73,7 @@ export async function bypassLoginAction() {
   const cookieStore = await cookies();
   cookieStore.set("auth_session", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,

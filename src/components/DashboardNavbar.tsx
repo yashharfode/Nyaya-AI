@@ -53,13 +53,6 @@ export default function DashboardNavbar({ user }: { user?: { name: string; email
       {/* Right Side: Actions & Profile */}
       <div className="flex items-center gap-6 ml-4">
         
-        {/* Upgrade Button */}
-        <button className="hidden md:flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors shadow-sm">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-            <path d="M2 20h20v2H2v-2zm1.5-2L2 9l5 3 5-7 5 7 5-3-1.5 9h-17z" />
-          </svg>
-          Upgrade to Pro
-        </button>
 
         {/* Notifications */}
         <button className="relative p-2 text-text-light hover:text-text-main hover:bg-bg-subtle rounded-full transition-colors">

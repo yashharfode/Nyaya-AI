@@ -9,7 +9,6 @@ import {
   ClipboardList,
   Landmark,
   Folder,
-  Phone,
   Eye,
   FileCheck2,
   FileQuestion,
@@ -27,40 +26,15 @@ export default async function DashboardPage() {
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 lg:space-y-8 font-sans selection:bg-brand-accent selection:text-white">
       
       {/* Top Section */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        
-        {/* Main Input Area */}
-        <div className="lg:col-span-2 space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2 mb-1">
-              {t("greeting", { name: userName })} <span className="text-2xl">👋</span>
-            </h1>
-            <p className="text-text-muted">{t("helpPrompt")}</p>
-          </div>
-
-          <DashboardChatInput />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 mb-1">
+            {t("greeting", { name: userName })} <span className="text-2xl">👋</span>
+          </h1>
+          <p className="text-text-muted text-sm sm:text-base">{t("helpPrompt")}</p>
         </div>
 
-        {/* Emergency Help Card */}
-        <div className="bg-white border border-border-main rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="font-bold text-lg mb-2">{t("immediateHelp.title")}</h3>
-              <p className="text-sm text-text-muted">{t("immediateHelp.desc")}</p>
-            </div>
-            <div className="bg-brand-accent/10 p-3 rounded-full text-brand-accent shrink-0">
-              <div className="relative">
-                <div className="w-6 h-6 border-b-4 border-brand-accent rounded-t-full relative z-10"></div>
-                <div className="w-1 h-2 bg-brand-accent absolute -top-2 left-1/2 -translate-x-1/2"></div>
-                <div className="w-8 h-1 bg-brand-accent absolute bottom-[-4px] left-1/2 -translate-x-1/2 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-          <a href="tel:112" className="w-full mt-6 bg-red-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-red-700 transition-colors shadow-md">
-            <Phone size={18} />
-            Call 112 (Emergency)
-          </a>
-        </div>
+        <DashboardChatInput />
       </div>
 
       {/* Quick Actions */}
