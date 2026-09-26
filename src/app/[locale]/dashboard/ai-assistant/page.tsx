@@ -518,7 +518,6 @@ export default function CaseAnalysisPage() {
       setEmergencyMode(true);
     }
 
-    // eslint-disable-next-line react-hooks/purity
     const userMessage = { role: "user", content: inputText, timestamp: Date.now() };
     setInputText("");
     setIsSending(true);
@@ -538,7 +537,6 @@ export default function CaseAnalysisPage() {
       await updateDoc(chatRef, updates);
 
       // Call Real AI with Model Choice and Reasoning
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const history: any[] = ((activeChat?.messages as any[]) || []).map((m: any) => ({ 
         role: m.role, 
         content: typeof m.content === 'object' ? JSON.stringify(m.content) : m.content,
@@ -564,7 +562,6 @@ export default function CaseAnalysisPage() {
           reasoning: res.reasoning || null,
           reasoning_details: res.reasoning_details || null,
           modelUsed: res.modelUsed || selectedModel,
-          // eslint-disable-next-line react-hooks/purity
           timestamp: Date.now() 
         };
         await updateDoc(chatRef, {
@@ -574,7 +571,6 @@ export default function CaseAnalysisPage() {
         const aiMessage = { 
           role: "ai", 
           content: "Sorry, I am having trouble connecting to the AI network right now. Please check your OPENROUTER_API_KEY or try again later.",
-          // eslint-disable-next-line react-hooks/purity
           timestamp: Date.now() 
         };
         await updateDoc(chatRef, {
